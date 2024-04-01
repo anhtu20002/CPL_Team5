@@ -1,7 +1,28 @@
-import React from 'react'
+import React from "react";
+import { Container } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
+import styles from "./Header.module.css";
 
 export default function Header() {
   return (
-    <div>Header</div>
-  )
+    <Container className={styles.header}>
+      <NavLink
+        style={{ color: "#5cb85c", fontSize: "30px", textDecoration: "none" }}
+        to="/"
+      >
+        <strong>Conduit</strong>
+      </NavLink>
+      <div className={styles.group_link}>
+        <NavLink className={({isActive})=>isActive?(styles.link_active):(styles.link)} to="/" >
+          Home
+        </NavLink>
+        <NavLink className={({isActive})=>isActive?(styles.link_active):(styles.link)} to="/login" >
+          Sign in
+        </NavLink>
+        <NavLink className={({isActive})=>isActive?(styles.link_active):(styles.link)} to="/register" >
+          Sign up
+        </NavLink>
+      </div>
+    </Container>
+  );
 }

@@ -1,0 +1,24 @@
+.header {
+    display: flex;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.link {
+    font-size: 18px;
+    color: rgb(183, 181, 181);
+    margin-left: 10px;
+    text-decoration: none;
+}
+.link:hover{
+    color: rgb(119, 118, 118);
+}
+
+.link_active {
+    font-size: 18px;
+    color: black;
+    margin-left: 10px;
+    text-decoration: none;
+}
