@@ -1,8 +1,8 @@
- import React, { useState } from 'react';
-import "../Assets/Login.css"
-import { client } from '../Utils/client.js';
-// import "bootstrap/dist/css/bootstrap.css";
+import React, { useState } from "react";
+import "../Assets/Login.css";
+
 const Login = () => {
+  const SERVER_API = "https://api.realworld.io/api";
   // State để lưu trữ giá trị email và password từ input
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,28 +17,37 @@ const Login = () => {
     setPassword(event.target.value);
   };
 
+  // Hàm gửi yêu cầu đăng nhập
+  const postwithToken = async (url, accessToken, data) => {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  };
+
   // Handler khi người dùng ấn nút đăng nhập
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      // Gọi API đăng nhập sử dụng phương thức post từ module client
-      const { response, data } = await client.post("/users/login", {
-        email,
-        password,
+      // Gọi API đăng nhập sử dụng phương thức postwithToken
+      const { user } = await postwithToken(`${SERVER_API}/users/login`, null, {
+        user: {
+          email,
+          password,
+        },
       });
-
-      // Kiểm tra status code của response
-      if (response.ok) {
-        // Xử lý khi đăng nhập thành công
-        console.log("Đăng nhập thành công!", data);
-      } else {
-        // Xử lý khi đăng nhập thất bại
-        // console.log();
-        console.error("Đăng nhập thất bại!", data);
-      }
+      console.log(user);
+      // Xử lý khi đăng nhập thành công
+      console.log("Đăng nhập thành công!", user);
     } catch (error) {
-      console.error("Lỗi khi gửi yêu cầu đăng nhập:", error);
+      // Xử lý khi đăng nhập thất bại
+      console.error("Đăng nhập thất bại:", error);
     }
   };
 

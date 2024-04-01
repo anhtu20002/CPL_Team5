@@ -2,9 +2,10 @@
 
 // import { config } from "./config.js";
 import { config } from "./config.js"
-
+// import 
 const { SERVER_AUTH_API } = config;
-console.log(config);
+
+console.log(SERVER_AUTH_API);
 // Định nghĩa các phương thức call API
 export const client = {
   serverApi: SERVER_AUTH_API,
@@ -59,3 +60,6 @@ export const client = {
     return this.send(url, "DELETE", null, token);
   },
 };
+// export const client = {
+
+// };
