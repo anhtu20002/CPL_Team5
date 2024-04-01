@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import "../Assets/Login.css";
-
+import { useNavigate } from "react-router-dom"; 
 const Login = () => {
   const SERVER_API = "https://api.realworld.io/api";
   // State để lưu trữ giá trị email và password từ input
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  // const history = useHistory();
+  const navigate = useNavigate();
   // Handler khi người dùng nhập vào input email
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -43,11 +44,18 @@ const Login = () => {
         },
       });
       console.log(user);
+      if (user === undefined) {
+        console.error("Đăng nhập thất bại:");
+      } else {
+        console.log("Đăng nhập thành công!", user);
+        console.log(user.token);
+        localStorage.setItem("token", user.token);
+        navigate("/HomePage");
+      }
       // Xử lý khi đăng nhập thành công
-      console.log("Đăng nhập thành công!", user);
     } catch (error) {
       // Xử lý khi đăng nhập thất bại
-      console.error("Đăng nhập thất bại:", error);
+      console.log(error);      
     }
   };
 
