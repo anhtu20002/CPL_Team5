@@ -34,7 +34,7 @@ const App = () => {
           path="/settings"
           element={<Settings setAuthStatus={setAuthStatus} />}
         />
-        <Route path="/profile/" element={<UserProfile />} />
+        <Route path="/profile/:username" element={<UserProfile />} />
       </Routes>
     </div>
   );
