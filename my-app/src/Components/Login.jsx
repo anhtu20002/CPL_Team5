@@ -50,7 +50,7 @@ const Login = () => {
         console.log("Đăng nhập thành công!", user);
         console.log(user.token);
         localStorage.setItem("token", user.token);
-        navigate("/HomePage");
+        navigate("/");
       }
       // Xử lý khi đăng nhập thành công
     } catch (error) {
@@ -58,6 +58,7 @@ const Login = () => {
       console.log(error);      
     }
   };
+
 
   return (
     <div>
