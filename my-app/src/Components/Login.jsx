@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "../Assets/Login.css";
-import { useNavigate, } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 // import { useHistory } from "react-router-dom";
-const Login = () => {
+const Login = ({ setAuthStatus }) => {
   const SERVER_API = "https://api.realworld.io/api";
   // State để lưu trữ giá trị email và password từ input
   const [email, setEmail] = useState("");
@@ -51,16 +51,16 @@ const Login = () => {
         console.log("Đăng nhập thành công!", user);
         console.log(user.token);
         localStorage.setItem("token", user.token);
+        setAuthStatus("AUTHENTICATED"); // Update authStatus
         navigate("/");
         // history.push("/")
       }
       // Xử lý khi đăng nhập thành công
     } catch (error) {
       // Xử lý khi đăng nhập thất bại
-      console.log(error);      
+      console.log(error);
     }
   };
-
 
   return (
     <div>
