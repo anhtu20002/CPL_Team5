@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../Assets/Login.css";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate, } from "react-router-dom"; 
+// import { useHistory } from "react-router-dom";
 const Login = () => {
   const SERVER_API = "https://api.realworld.io/api";
   // State để lưu trữ giá trị email và password từ input
@@ -51,6 +52,7 @@ const Login = () => {
         console.log(user.token);
         localStorage.setItem("token", user.token);
         navigate("/");
+        // history.push("/")
       }
       // Xử lý khi đăng nhập thành công
     } catch (error) {
