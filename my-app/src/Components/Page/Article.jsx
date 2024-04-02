@@ -35,6 +35,7 @@ export default function Article() {
         },
         body: JSON.stringify(data),
       });
+        console.log(data);
       return response.json();
     };
 
@@ -43,36 +44,30 @@ export default function Article() {
     event.preventDefault();
 
       console.log(title,content,about,tags);
-     try {
-       // Gọi API đăng nhập sử dụng phương thức postwithToken
-       const { article } = await postwithToken(`${SERVER_API}/articles`,token,
-         {
-           article: {
-             title,
-             about,
-             content,
-             tags,
-           },
-         }
-       );
-       console.log(article);
-       if (article === undefined) {
-         console.error("Đăng nhập thất bại:");
-       } else {
-         console.log("Thêm thành công!", article);
-        //  console.log(article.token);
-           //  localStorage.setItem("token", user.token);
-        
-         navigate("/");
-         // history.push("/")
-       }
-       // Xử lý khi đăng nhập thành công
-     } catch (error) {
-       // Xử lý khi đăng nhập thất bại
-       console.log(error);
-     }
-    
-  };
+    const tagArray = tags.split(',');
+        console.log(tagArray);
+  try {
+    // Gọi API đăng nhập sử dụng phương thức postwithToken
+    const { articles } = await postwithToken(`${SERVER_API}/articles`, token, {
+      article: {
+            title: title,
+        description: about,
+        body:content,
+        tagList: tagArray,
+      },
+    });
+
+    console.log(articles);
+    if (articles === undefined) {
+      console.error("Thêm bài viết thất bại 1");
+    } else {
+      console.log("Thêm bài viết thành công!", articles);
+      navigate("/");
+    }
+  } catch (error) {
+    console.error("Thêm bài viết thất bại:", error);
+  }
+};
 
     return (
       <div className="container">
