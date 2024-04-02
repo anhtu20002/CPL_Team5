@@ -1,0 +1,44 @@
+.author-info {
+    margin-top: 10px;
+}
+
+.article_info {
+    margin-top: 10px;
+
+    a {
+        h3 {
+            color: #373a3c;
+            font-size: 24px;
+        }
+
+        p {
+            color: #999999;
+        }
+
+        div {
+            display: flex;
+            justify-content: space-between;
+
+            span {
+                color: #bbbbbb;
+                font-size: 12.8px;
+                float: left;
+            }
+
+            ul {
+                color: #aaaaaa;
+                display: inline-block;
+                font-size: 12.8px;
+                list-style: none;
+            }
+
+            ul li {
+                float: left;
+                border: 1px solid #bebcbc;
+                margin-left: 8px;
+                padding: 3px;
+                border-radius: 10px;
+            }
+        }
+    }
+}

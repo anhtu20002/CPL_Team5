@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 // import Header from "./Header";
 // import { SERVER_API } from "../Utils/config.js";
 import { Col, Container, Row } from "react-bootstrap";
+import styles from "./Home.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 const Home = () => {
   const [articles, setArticles] = useState([]);
@@ -43,29 +46,49 @@ const Home = () => {
       <Container>
         <Row>
           <Col md={9}>
-            <Row>Global Feed</Row>
+            <Row>
+              <Col>Global Feed</Col>
+            </Row>
             {articles.map((article, index) => {
               return (
                 <div>
-                  <div className="author-info d-flex justify-content-between">
-                    <div className="d-flex">
+                  <div className={`author-info d-flex justify-content-between`}>
+                    <div className="d-flex text-center">
                       <a href="#">
                         <img src={article.author.image} alt="" />
                       </a>
                       <div>
-                        <a href="#">{article.author.username}</a>
+                        <div>
+                          <a href="#">{article.author.username}</a>
+                        </div>
                         <span>{formatDate(article.createdAt)}</span>
                       </div>
                     </div>
-                    <button>
-                      <i className="icon-heart"></i>
+                    <button className="btn btn-sm btn-outline-primary pull-xs-right">
+                      <FontAwesomeIcon icon={faHeart} />
                       {article.favoritesCount}
                     </button>
                   </div>
 
-                  <div className="article-info">
+                  <div className={styles.article_info}>
                     <a href="#" style={{ textDecoration: "none" }}>
                       <h3>{article.title}</h3>
+                      <p>{article.description}</p>
+                      <div>
+                        <span>Read more...</span>
+                        <ul className="tag-list">
+                          {article.tagList.map((tag) => {
+                            return (
+                              <li
+                                className="tag-default tag-pill tag-outline"
+                                key={tag}
+                              >
+                                {tag}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
                     </a>
                   </div>
                 </div>
