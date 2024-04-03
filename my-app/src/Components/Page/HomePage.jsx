@@ -41,7 +41,7 @@ const HomePage = () => {
           className={({ isActive }) =>
             isActive ? styles.link_active : styles.link
           }
-          to="/profile"
+          to={`/profile/${encodeURIComponent(localStorage.getItem("username"))}`}
         >
           User Profile
         </NavLink>
