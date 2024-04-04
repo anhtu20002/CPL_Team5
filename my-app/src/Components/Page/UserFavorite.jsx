@@ -27,6 +27,7 @@ const UserFavorite = () => {
       });
   }, [username]);
 
+  // Fetch only favorited articles for the current user
   useEffect(() => {
     fetch(
       `https://api.realworld.io/api/articles?favorited=${encodeURIComponent(username)}&limit=10&offset=0`
@@ -38,8 +39,8 @@ const UserFavorite = () => {
       .catch((err) => {
         console.log(err.message);
       });
-  }, [username]);
-
+  }, [username]); // Dependency on username to refetch on username change
+  console.log(favoriteArticles);
   return (
     <div>
       <div className="user-info">
@@ -58,10 +59,7 @@ const UserFavorite = () => {
         >
           My Articles
         </NavLink>
-        <NavLink
-          className="text-decoration-none"
-          to={`/profile/${username}/favorite`}
-        >
+        <NavLink className="text-decoration-none" to={`/profile/${username}/favorite`}>
           Favorited Articles
         </NavLink>
       </div>
@@ -80,11 +78,8 @@ const UserFavorite = () => {
                   <span>{formatDate(article.createdAt)}</span>
                 </div>
               </div>
-              <button
-                className="btn btn-sm btn-outline-success pull-xs-right"
-              >
-                <FontAwesomeIcon icon={faHeart} />
-                {article.favoritesCount}
+              <button className="btn btn-sm btn-outline-success pull-xs-right">
+                <FontAwesomeIcon icon={faHeart} /> {article.favoritesCount}
               </button>
             </div>
 
@@ -95,16 +90,14 @@ const UserFavorite = () => {
                 <div>
                   <span>Read more...</span>
                   <ul className="tag-list">
-                    {article.tagList.map((tag) => {
-                      return (
-                        <li
-                          className="tag-default tag-pill tag-outline"
-                          key={tag}
-                        >
-                          {tag}
-                        </li>
-                      );
-                    })}
+                    {article.tagList.map((tag) => (
+                      <li
+                        className="tag-default tag-pill tag-outline"
+                        key={tag}
+                      >
+                        {tag}
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>

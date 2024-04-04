@@ -10,6 +10,8 @@ export default function UserProfile() {
   const [follow, setFollow] = useState(false);
   const { username } = useParams();
   const nav = useNavigate();
+  const [isLoading, setIsLoading] = useState(true); 
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const options = { month: "long", day: "numeric", year: "numeric" };
@@ -34,17 +36,30 @@ export default function UserProfile() {
   }, [username]);
 
   useEffect(() => {
-    fetch(
-      `https://api.realworld.io/api/articles?author=${username}&limit=5&offset=0`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setArticles(data.articles);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, [username]);
+    const fetchArticles = async () => {
+      const response = await fetch(
+        `https://api.realworld.io/api/articles?author=${username}&limit=5&offset=0`
+      );
+      const data = await response.json();
+
+      if (isAuthenticated()) {
+        const localStorageFavoritedArticles = JSON.parse(
+          localStorage.getItem("favoritedArticles") || "{}"
+        );
+
+        const updatedArticles = data.articles.map((article) => {
+          const favoritedFromStorage = localStorageFavoritedArticles[article.slug];
+          return { ...article, favorited: favoritedFromStorage || false };
+        });
+        setArticles(updatedArticles);
+      } else {
+        setArticles(data.articles); // Set default state without favorited info
+      }
+      setIsLoading(false);
+    };
+
+    fetchArticles();
+  }, [username, isAuthenticated]);
 
   const handleFavorite = async (article) => {
     if (!isAuthenticated()) {
@@ -76,13 +91,15 @@ export default function UserProfile() {
         );
         setArticles(updatedArticles);
 
-        // Update local storage with the favorite status
-        const favoriteArticles =
-          JSON.parse(localStorage.getItem("favoriteArticles")) || {};
-        favoriteArticles[article.slug] = updatedArticleData.article.favorited;
+        // Update Local Storage with favorited state
+        const localStorageFavoritedArticles = JSON.parse(
+          localStorage.getItem("favoritedArticles") || "{}"
+        );
+        localStorageFavoritedArticles[article.slug] =
+          updatedArticleData.article.favorited;
         localStorage.setItem(
-          "favoriteArticles",
-          JSON.stringify(favoriteArticles)
+          "favoritedArticles",
+          JSON.stringify(localStorageFavoritedArticles)
         );
       } catch (error) {
         console.error("Error favoriting/unfavoriting article:", error);
@@ -90,9 +107,8 @@ export default function UserProfile() {
     }
   };
 
-  // Load favorite status from local storage when component mounts
-  
   console.log(articles);
+
   return (
     <div className="user-profile">
       <div className="user-info">
@@ -145,7 +161,7 @@ export default function UserProfile() {
                 </div>
                 <button
                   onClick={() => handleFavorite(article)}
-                  className="btn btn-sm btn-outline-success pull-xs-right"
+                  className={article.favorited? ("btn btn-sm btn-success pull-xs-right"):("btn btn-sm btn-outline-success pull-xs-right")}
                 >
                   <FontAwesomeIcon icon={faHeart} />
                   {article.favoritesCount}
