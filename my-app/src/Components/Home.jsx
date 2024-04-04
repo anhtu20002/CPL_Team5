@@ -86,6 +86,14 @@ const Home = () => {
     setFillTag(tag);
   };
 
+  // toggle global feed
+  const handleToggle = (tag) => {
+    if (fillTag !== tag) {
+      setFillTag("");
+    }
+    setFillTag(tag);
+  };
+
   return (
     <div>
       <div
@@ -101,12 +109,22 @@ const Home = () => {
         <p style={{ fontSize: "24px" }}>A place to share your knowledge.</p>
       </div>
 
-      <Container className="mt-3">
+      <Container className="mt-5">
         <Row>
           <Col md={9}>
-            <div className="my-3">
-              <span>Global Feed</span>
-              <span>{fillTag}</span>
+            <div className={`${styles.feed_toggle} my-3`}>
+              <ul>
+                <li>
+                  <a href onClick={() => handleToggle("")}>
+                    Global Feed
+                  </a>
+                </li>
+                <li>
+                  <a href onClick={() => handleToggle(fillTag)}>
+                    {fillTag}
+                  </a>
+                </li>
+              </ul>
             </div>
             {articles.map((article, index) => {
               return (
