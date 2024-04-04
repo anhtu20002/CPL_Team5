@@ -12,27 +12,39 @@
             margin-left: 5px;
             flex-direction: column;
 
+            a {
+                color: #5cb85c;
+                text-decoration: none;
+            }
+
+            a:hover {
+                color: #428e42;
+                text-decoration: underline;
+            }
+
             span {
-                font-size: 14px;
+                font-size: 12px;
                 display: block;
             }
         }
     }
 
-    button {
-        font-size: 14px;
-        color: #5cb85c;
-        padding: 4px 8px;
+    div {
+        button {
+            font-size: 14px;
+            color: #5cb85c;
+            padding: 4px 8px;
 
-        span {
-            margin-left: 4px;
+            span {
+                margin-left: 4px;
+            }
         }
-    }
 
-    button:active,
-    button:hover {
-        color: white;
-        background-color: #5cb85c;
+        button:active,
+        button:hover {
+            color: white;
+            background-color: #5cb85c;
+        }
     }
 }
 
@@ -104,6 +116,32 @@
 
 }
 
-.page_fill {
+/* css cho item */
+.pageItem {
+    display: inline;
+}
+
+/* Định dạng cho liên kết của nút trang */
+.pageLink {
+    position: relative;
+    float: left;
+    padding: .5rem .75rem;
+    margin-left: -1px;
     color: #5cb85c;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.pageLink:hover {
+    text-decoration: underline;
+    background-color: #e5e5e5;
+}
+
+
+/* Định dạng cho liên kết của nút trang được chọn */
+.active .pageLink {
+    color: white;
+    background-color: #5cb85c;
+    /* Màu chữ trắng */
 }

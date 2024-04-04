@@ -10,6 +10,7 @@ import ReactPaginate from "react-paginate";
 const Home = () => {
   const [articles, setArticles] = useState([]);
   const [tags, setTags] = useState([]);
+  const [fillTag, setFillTag] = useState("");
   const [totalPages, setTotalPages] = useState(0);
 
   // fetch articles
@@ -27,8 +28,8 @@ const Home = () => {
   // }, []);
 
   useEffect(() => {
-    getArticles(0);
-  },[]);
+    getArticles("", 0);
+  }, []);
 
   // lấy articles theo offset
   const getArticles = async (offset) => {
@@ -39,8 +40,17 @@ const Home = () => {
   };
 
   // truyền offset vào api
-  const fetchArticles = (offset) =>
-    fetch("https://api.realworld.io/api/articles?offset=" + offset);
+  const fetchArticles = (fillTag, offset) => {
+    if (fillTag.trim().length > 0) {
+      return fetch(
+        "https://api.realworld.io/api/articles?tag=" +
+          fillTag +
+          "&offset=" +
+          offset
+      );
+    }
+    return fetch("https://api.realworld.io/api/articles?offset=" + offset);
+  };
 
   // fetch Tags
   useEffect(() => {
@@ -68,6 +78,13 @@ const Home = () => {
     getArticles(event.selected * 10);
   };
 
+  // fill tags
+  const handleClickTags = (event, tag) => {
+    event.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>
+    console.log("Clicked tag:", tag);
+    setFillTag(tag);
+  };
+
   return (
     <div>
       <div
@@ -86,7 +103,10 @@ const Home = () => {
       <Container className="mt-3">
         <Row>
           <Col md={9}>
-            <div className="my-3">Global Feed</div>
+            <div className="my-3">
+              <span>Global Feed</span>
+              <span>{fillTag}</span>
+            </div>
             {articles.map((article, index) => {
               return (
                 <div>
@@ -102,10 +122,12 @@ const Home = () => {
                         <span>{formatDate(article.createdAt)}</span>
                       </div>
                     </div>
-                    <button className="btn btn-sm btn-outline-success pull-xs-right">
-                      <FontAwesomeIcon icon={faHeart} />
-                      <span>{article.favoritesCount}</span>
-                    </button>
+                    <div>
+                      <button className="btn btn-sm btn-outline-success pull-xs-right">
+                        <FontAwesomeIcon icon={faHeart} />
+                        <span>{article.favoritesCount}</span>
+                      </button>
+                    </div>
                   </div>
 
                   <div className={styles.article_info}>
@@ -139,14 +161,14 @@ const Home = () => {
               marginPagesDisplayed={0}
               pageRangeDisplayed={totalPages}
               onPageChange={handlePageClick}
-              pageClassName={`${styles.page_fill}page-item`}
-              pageLinkClassName="page-link"
+              pageClassName={styles.pageItem}
+              pageLinkClassName={styles.pageLink}
               containerClassName="pagination d-flex flex-wrap"
-              previousClassName="page-item"
-              previousLinkClassName="page-link"
-              nextClassName="page- item"
-              nextLinkClassName="page-link"
-              activeClassName="active"
+              previousClassName={styles.previous}
+              previousLinkClassName={styles.pageLink}
+              nextClassName={styles.next}
+              nextLinkClassName={styles.pageLink}
+              activeClassName={styles.active}
             />
           </Col>
           <Col md={3} className={styles.sidebar}>
@@ -154,7 +176,11 @@ const Home = () => {
               <span>Popular Tags</span>
               <div className={styles.tag_list}>
                 {tags.map((tag, index) => {
-                  return <a href="#">{tag}</a>;
+                  return (
+                    <a onClick={(event) => handleClickTags(event, tag)}>
+                      {tag}
+                    </a>
+                  );
                 })}
               </div>
             </div>
