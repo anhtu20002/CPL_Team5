@@ -28,12 +28,13 @@ const Home = () => {
   // }, []);
 
   useEffect(() => {
-    getArticles("", 0);
-  }, []);
+    getArticles(fillTag, 0);
+    console.log(fillTag);
+  }, [fillTag]);
 
   // lấy articles theo offset
-  const getArticles = async (offset) => {
-    let res = await fetchArticles(offset);
+  const getArticles = async (fillTag, offset) => {
+    let res = await fetchArticles(fillTag, offset);
     let data = await res.json();
     setArticles(data.articles);
     setTotalPages(Math.ceil(data.articlesCount / 10));
@@ -75,7 +76,7 @@ const Home = () => {
   // lấy số trang, set offset
   const handlePageClick = (event) => {
     console.log("event thư viện page: ", event);
-    getArticles(event.selected * 10);
+    getArticles(fillTag, event.selected * 10);
   };
 
   // fill tags
