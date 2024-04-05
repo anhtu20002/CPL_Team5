@@ -58,6 +58,7 @@ const Login = ({ setAuthStatus }) => {
         // history.push("/")
       }
       // Xử lý khi đăng nhập thành công
+      console.log(user.token);
     } catch (error) {
       // Xử lý khi đăng nhập thất bại
       console.log(error);

@@ -1,0 +1,19 @@
+.profile-articles{
+    padding: 0 8rem;
+}
+
+ul{
+    list-style: none;
+}
+
+li{
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    color: #aaa !important;
+    background: 0 0 !important;
+    border-radius: 10rem;
+    padding-right: .6em;
+    padding-left: .6em;
+    float: left;
+    margin-left: 8px;
+}

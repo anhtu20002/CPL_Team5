@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useParams, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { useParams, NavLink } from "react-router-dom";
 
-const UserFavorite = () => {
+export default function UserFavorite() {
+  const [articles, setArticles] = useState([]);
   const [user, setUser] = useState([]);
-  const [favoriteArticles, setFavoriteArticles] = useState([]);
+  const nav = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const { username } = useParams();
+  const [allArticles, setAllArticles] = useState([]);
+  const [deletedArticles, setDeletedArticles] = useState([]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -14,33 +19,100 @@ const UserFavorite = () => {
     return date.toLocaleDateString("en-US", options);
   };
 
-  useEffect(() => {
-    fetch(
-      "https://api.realworld.io/api/profiles/" + encodeURIComponent(username)
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setUser(data);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, [username]);
+  const isAuthenticated = () => {
+    return localStorage.getItem("token") !== null;
+  };
 
-  // Fetch only favorited articles for the current user
   useEffect(() => {
-    fetch(
-      `https://api.realworld.io/api/articles?favorited=${encodeURIComponent(username)}&limit=10&offset=0`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setFavoriteArticles(data.articles);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, [username]); // Dependency on username to refetch on username change
-  console.log(favoriteArticles);
+    const fetchUserProfileAndFavorites = async () => {
+      if (!isAuthenticated()) {
+        alert("Please login to view favorited articles!");
+        nav("/login");
+        return;
+      }
+
+      try {
+        // Fetch user profile
+        const profileResponse = await fetch(
+          `https://api.realworld.io/api/profiles/${username}`
+        );
+        if (!profileResponse.ok) {
+          throw new Error("Failed to fetch user profile");
+        }
+        const userData = await profileResponse.json();
+        setUser(userData);
+
+        // Retrieve favorited articles from local storage
+        const storedArticles =
+          JSON.parse(localStorage.getItem("favoriteArticles")) || [];
+
+        setArticles(storedArticles);
+        setIsLoading(false);
+
+        // Fetch favorited articles from the API
+        const favoritesResponse = await fetch(
+          `https://api.realworld.io/api/articles?favorited=${user.profile.username}`
+        );
+        if (!favoritesResponse.ok) {
+          throw new Error("Failed to fetch favorited articles");
+        }
+        const updatedArticleData = await favoritesResponse.json();
+        setArticles(updatedArticleData.articles);
+
+        // Update local storage with the fetched favorited articles
+        localStorage.setItem(
+          "favoriteArticles",
+          JSON.stringify(updatedArticleData.articles)
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfileAndFavorites();
+  }, []);
+
+  const handleUnfavorite = async (slug) => {
+    if (!isAuthenticated()) {
+      alert("Please login to unfavorite articles!");
+      nav("/login");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    try {
+      // Remove the article from favorites
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${slug}/favorite`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Token ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to unfavorite article");
+      }
+
+      // Remove the article from the local state
+      const updatedArticles = articles.filter(
+        (article) => article.slug !== slug
+      );
+      setArticles(updatedArticles);
+      localStorage.setItem("favoriteArticles", JSON.stringify(updatedArticles));
+
+      // Add the deleted article to the deletedArticles state
+      setDeletedArticles([...deletedArticles, slug]);
+    } catch (error) {
+      console.error("Error unfavoriting article:", error);
+    }
+  };
+
   return (
     <div>
       <div className="user-info">
@@ -59,54 +131,66 @@ const UserFavorite = () => {
         >
           My Articles
         </NavLink>
-        <NavLink className="text-decoration-none" to={`/profile/${username}/favorite`}>
+        <NavLink
+          className="text-decoration-none"
+          to={`/profile/${username}/favorite`}
+        >
           Favorited Articles
         </NavLink>
       </div>
       <div>
-        {favoriteArticles.map((article) => (
-          <div key={article.slug}>
-            <div className={`author-info d-flex justify-content-between`}>
-              <div className="d-flex text-center">
-                <div>
-                  <img src={article.author.image} alt="" />
-                </div>
-                <div>
-                  <div>
-                    <div>{article.author.username}</div>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : articles.length > 0 ? (
+          articles
+            .filter((article) => !deletedArticles.includes(article.slug))
+            .map((article) => (
+              <div key={article.slug}>
+                <div className={`author-info d-flex justify-content-between`}>
+                  <div className="d-flex text-center">
+                    <div>
+                      <img src={article.author.image} alt="" />
+                    </div>
+                    <div>
+                      <div>
+                        <div>{article.author.username}</div>
+                      </div>
+                      <span>{formatDate(article.createdAt)}</span>
+                    </div>
                   </div>
-                  <span>{formatDate(article.createdAt)}</span>
+                  <button
+                    className="btn btn-sm btn-outline-success pull-xs-right"
+                    onClick={() => handleUnfavorite(article.slug)}
+                  >
+                    <FontAwesomeIcon icon={faHeart} /> {article.favoritesCount}
+                  </button>
                 </div>
-              </div>
-              <button className="btn btn-sm btn-outline-success pull-xs-right">
-                <FontAwesomeIcon icon={faHeart} /> {article.favoritesCount}
-              </button>
-            </div>
 
-            <div>
-              <div style={{ textDecoration: "none" }}>
-                <h3>{article.title}</h3>
-                <p>{article.description}</p>
                 <div>
-                  <span>Read more...</span>
-                  <ul className="tag-list">
-                    {article.tagList.map((tag) => (
-                      <li
-                        className="tag-default tag-pill tag-outline"
-                        key={tag}
-                      >
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
+                  <div style={{ textDecoration: "none" }}>
+                    <h3>{article.title}</h3>
+                    <p>{article.description}</p>
+                    <div>
+                      <span>Read more...</span>
+                      <ul className="tag-list">
+                        {article.tagList.map((tag) => (
+                          <li
+                            className="tag-default tag-pill tag-outline"
+                            key={tag}
+                          >
+                            {tag}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
+            ))
+        ) : (
+          <p>You haven't favorited any articles yet.</p>
+        )}
       </div>
     </div>
   );
-};
-
-export default UserFavorite;
+}
