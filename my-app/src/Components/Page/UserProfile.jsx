@@ -12,7 +12,7 @@ export default function UserProfile() {
   const { username } = useParams();
   const nav = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [myFavorite, setMyFavorite] = useState([]);
+  const token = localStorage.getItem("token");
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -24,27 +24,58 @@ export default function UserProfile() {
     return localStorage.getItem("token") !== null;
   };
 
-  useEffect(() => {
-    fetch(
-      `https://api.realworld.io/api/articles?favorited=${localStorage.getItem(
-        "username"
-      )}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setMyFavorite(data.articles);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, [username]);
+  const handleFollow = async (username) => {
+    if (!isAuthenticated()) {
+      alert("Please login to follow users!");
+      nav("/login");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    const method = user.profile?.following ? "DELETE" : "POST"; // Determine API method based on follow state
+
+    try {
+      const response = await fetch(
+        `https://api.realworld.io/api/profiles/${username}/follow`,
+        {
+          method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to follow/unfollow user");
+      }
+
+      const updatedFollowStatus = await response.json();
+      setFollow(updatedFollowStatus.profile.following); // Update local follow state
+    } catch (error) {
+      console.error("Error following/unfollowing user:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(
-          `https://api.realworld.io/api/profiles/${encodeURIComponent(username)}`
-        );
+        const response = token
+          ? await fetch(
+              `https://api.realworld.io/api/profiles/${encodeURIComponent(
+                username
+              )}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+          : await fetch(
+              `https://api.realworld.io/api/profiles/${encodeURIComponent(
+                username
+              )}`
+            );
+
         if (!response.ok) {
           throw new Error("Failed to fetch user profile");
         }
@@ -56,16 +87,27 @@ export default function UserProfile() {
     };
 
     fetchUserProfile();
-  }, [username]);
+  }, [username, follow]);
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await fetch(
-          `https://api.realworld.io/api/articles?author=${encodeURIComponent(
-            username
-          )}&limit=5&offset=0`
-        );
+        const response = token
+          ? await fetch(
+              `https://api.realworld.io/api/articles?author=${encodeURIComponent(
+                username
+              )}&limit=5&offset=0`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+          : await fetch(
+              `https://api.realworld.io/api/articles?author=${encodeURIComponent(
+                username
+              )}&limit=5&offset=0`
+            );
         if (!response.ok) {
           throw new Error("Failed to fetch articles");
         }
@@ -89,8 +131,7 @@ export default function UserProfile() {
 
     try {
       const token = localStorage.getItem("token");
-      const isFavorited = myFavorite.some((favArticle) => favArticle.slug === article.slug); // Check favorites list
-      const method = isFavorited ? "DELETE" : "POST"; // Determine request method based on favorited state
+      const method = article.favorited ? "DELETE" : "POST";
 
       const response = await fetch(
         `https://api.realworld.io/api/articles/${article.slug}/favorite`,
@@ -108,31 +149,16 @@ export default function UserProfile() {
 
       const updatedArticleData = await response.json();
 
-      // Update local favorites state efficiently
-      setMyFavorite((prevFavorites) => {
-        const updatedFavorites = [...prevFavorites];
-        const favoriteIndex = updatedFavorites.findIndex((fav) => fav.slug === article.slug);
-
-        if (isFavorited) {
-          updatedFavorites.splice(favoriteIndex, 1); // Remove from favorites if previously favorited
-        } else {
-          updatedFavorites.push(updatedArticleData.article); // Add to favorites if not previously favorited
-        }
-
-        return updatedFavorites;
-      });
-
       setArticles((prevArticles) =>
         prevArticles.map((a) =>
           a.slug === article.slug ? { ...a, ...updatedArticleData.article } : a
         )
       );
-
     } catch (error) {
       console.error("Error favoriting/unfavoriting article:", error);
     }
   };
-  // console.log(articles);
+  console.log(user);
 
   return (
     <div className="user-profile">
@@ -144,10 +170,10 @@ export default function UserProfile() {
               <h4>{user.profile?.username}</h4>
               {username === localStorage.getItem("username") ? (
                 <button>Settings</button>
-              ) : follow ? (
-                <button>Unfollow</button>
               ) : (
-                <button>Follow</button>
+                <button onClick={() => handleFollow(user.profile?.username)}>
+                  {user.profile?.following ? "Unfollow" : "Follow"}
+                </button> // Other user's profile - display "Follow" or "Unfollow"
               )}
             </div>
           </div>
@@ -187,7 +213,7 @@ export default function UserProfile() {
                   <button
                     onClick={() => handleFavorite(article)}
                     className={
-                      myFavorite.some((favArticle) => favArticle.slug === article.slug)
+                      article.favorited
                         ? "btn btn-sm btn-success pull-xs-right"
                         : "btn btn-sm btn-outline-success pull-xs-right"
                     }

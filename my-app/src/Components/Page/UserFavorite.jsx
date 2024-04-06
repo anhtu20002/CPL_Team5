@@ -10,7 +10,6 @@ export default function UserFavorite() {
   const nav = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const { username } = useParams();
-  const [allArticles, setAllArticles] = useState([]);
   const [deletedArticles, setDeletedArticles] = useState([]);
 
   const formatDate = (dateString) => {
@@ -24,92 +23,94 @@ export default function UserFavorite() {
   };
 
   useEffect(() => {
-    const fetchUserProfileAndFavorites = async () => {
-      if (!isAuthenticated()) {
-        alert("Please login to view favorited articles!");
-        nav("/login");
-        return;
-      }
-
+    const fetchUserProfile = async () => {
       try {
-        // Fetch user profile
-        const profileResponse = await fetch(
-          `https://api.realworld.io/api/profiles/${username}`
+        const response = await fetch(
+          `https://api.realworld.io/api/profiles/${encodeURIComponent(
+            username
+          )}`
         );
-        if (!profileResponse.ok) {
+        if (!response.ok) {
           throw new Error("Failed to fetch user profile");
         }
-        const userData = await profileResponse.json();
+        const userData = await response.json();
         setUser(userData);
-
-        // Retrieve favorited articles from local storage
-        const storedArticles =
-          JSON.parse(localStorage.getItem("favoriteArticles")) || [];
-
-        setArticles(storedArticles);
-        setIsLoading(false);
-
-        // Fetch favorited articles from the API
-        const favoritesResponse = await fetch(
-          `https://api.realworld.io/api/articles?favorited=${user.profile.username}`
-        );
-        if (!favoritesResponse.ok) {
-          throw new Error("Failed to fetch favorited articles");
-        }
-        const updatedArticleData = await favoritesResponse.json();
-        setArticles(updatedArticleData.articles);
-
-        // Update local storage with the fetched favorited articles
-        localStorage.setItem(
-          "favoriteArticles",
-          JSON.stringify(updatedArticleData.articles)
-        );
       } catch (error) {
-        console.error("Error fetching data:", error);
-        setIsLoading(false);
+        console.error("Error fetching user profile:", error);
       }
     };
 
-    fetchUserProfileAndFavorites();
-  }, []);
+    fetchUserProfile();
+  }, [username]);
 
-  const handleUnfavorite = async (slug) => {
+  useEffect(() => {
+    const fetchArticles = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response =  token ? await fetch(
+          `https://api.realworld.io/api/articles?favorited=${username}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        ): await fetch(
+          `https://api.realworld.io/api/articles?favorited=${username}`,
+        )
+        ;
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch articles");
+        }
+        const data = await response.json();
+        setArticles(data.articles);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching articles:", error);
+      }
+    };
+
+    fetchArticles();
+  }, [username]);
+
+  const handleFavorite = async (slug) => {
+    const token = localStorage.getItem("token");
+  
     if (!isAuthenticated()) {
-      alert("Please login to unfavorite articles!");
+      alert("Please login to favorite articles!");
       nav("/login");
       return;
     }
-
-    const token = localStorage.getItem("token");
-
+  
+    const isCurrentlyFavorited = articles.find((article) => article.slug === slug)?.favorited;
+    const newState = [...articles]; // Create a copy of the state
+  
     try {
-      // Remove the article from favorites
       const response = await fetch(
         `https://api.realworld.io/api/articles/${slug}/favorite`,
         {
-          method: "DELETE",
+          method: isCurrentlyFavorited ? 'DELETE' : 'POST',
           headers: {
-            Authorization: `Token ${token}`,
-            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-
+  
       if (!response.ok) {
-        throw new Error("Failed to unfavorite article");
+        throw new Error("Failed to update favorite status");
       }
-
-      // Remove the article from the local state
-      const updatedArticles = articles.filter(
-        (article) => article.slug !== slug
-      );
-      setArticles(updatedArticles);
-      localStorage.setItem("favoriteArticles", JSON.stringify(updatedArticles));
-
-      // Add the deleted article to the deletedArticles state
-      setDeletedArticles([...deletedArticles, slug]);
+  
+      const updatedArticle = await response.json();
+      const updatedArticleIndex = newState.findIndex((article) => article.slug === slug);
+  
+      if (updatedArticleIndex !== -1) {
+        newState[updatedArticleIndex] = updatedArticle.article; // Update article in state
+        setArticles(newState); // Update component state with the modified articles
+      } else {
+        console.warn("Article not found in state after update (unexpected)");
+      }
     } catch (error) {
-      console.error("Error unfavoriting article:", error);
+      console.error("Error updating favorite status:", error);
     }
   };
 
@@ -143,8 +144,9 @@ export default function UserFavorite() {
           <p>Loading...</p>
         ) : articles.length > 0 ? (
           articles
-            .filter((article) => !deletedArticles.includes(article.slug))
+            
             .map((article) => (
+              !deletedArticles.includes(article.slug) && (article.favorited || !article.favorited)?
               <div key={article.slug}>
                 <div className={`author-info d-flex justify-content-between`}>
                   <div className="d-flex text-center">
@@ -159,8 +161,12 @@ export default function UserFavorite() {
                     </div>
                   </div>
                   <button
-                    className="btn btn-sm btn-outline-success pull-xs-right"
-                    onClick={() => handleUnfavorite(article.slug)}
+                    className={
+                      article.favorited
+                        ? "btn btn-sm btn-success pull-xs-right"
+                        : "btn btn-sm btn-outline-success pull-xs-right"
+                    }
+                    onClick={() => handleFavorite(article.slug)}
                   >
                     <FontAwesomeIcon icon={faHeart} /> {article.favoritesCount}
                   </button>
@@ -185,7 +191,7 @@ export default function UserFavorite() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div>:null
             ))
         ) : (
           <p>You haven't favorited any articles yet.</p>
