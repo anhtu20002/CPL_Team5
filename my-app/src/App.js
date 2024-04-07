@@ -37,9 +37,8 @@ const App = () => {
           element={<Settings setAuthStatus={setAuthStatus} />}
         />
         <Route path="/profile/:username" element={<UserProfile />} />
-        <Route path="/profile/:username/favorite" element={<UserFavorite />} />
+        <Route path="/profile/:username/favorites" element={<UserFavorite />} />
       </Routes>
-      <Details />
     </div>
   );
 };

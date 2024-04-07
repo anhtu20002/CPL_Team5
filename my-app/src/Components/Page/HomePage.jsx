@@ -1,17 +1,19 @@
 import React from "react";
 import { Container } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import styles from "../Header.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faGear } from "@fortawesome/free-solid-svg-icons";
 
 const HomePage = () => {
   return (
     <Container className={styles.header}>
-      <NavLink
+      <Link
         style={{ color: "#5cb85c", fontSize: "30px", textDecoration: "none" }}
         to="/"
       >
         <strong>Conduit</strong>
-      </NavLink>
+      </Link>
       <div>
         <NavLink
           className={({ isActive }) =>
@@ -27,6 +29,7 @@ const HomePage = () => {
           }
           to="/editor"
         >
+          <FontAwesomeIcon className='me-1' icon={faPenToSquare} />
           New Article
         </NavLink>
         <NavLink
@@ -35,15 +38,24 @@ const HomePage = () => {
           }
           to="/settings"
         >
+          <FontAwesomeIcon className='me-1' icon={faGear} />
           Settings
         </NavLink>
         <NavLink
           className={({ isActive }) =>
             isActive ? styles.link_active : styles.link
           }
-          to={`/profile/${encodeURIComponent(localStorage.getItem("username"))}`}
+          to={`/profile/${encodeURIComponent(
+            localStorage.getItem("username")
+          )}`}
         >
-          User Profile
+          <img
+            className="mb-1 me-1"
+            style={{ width: "24px", height: "24px", borderRadius: "100%" }}
+            src={`${localStorage.getItem("image")}`}
+            alt=""
+          ></img>
+          {localStorage.getItem("username")}
         </NavLink>
       </div>
     </Container>

@@ -1,19 +1,196 @@
-.profile-articles{
-    padding: 0 8rem;
+.profile {
+    margin: 0 auto;
+    margin-top: 0.5em;
 }
 
-ul{
-    list-style: none;
+.follow{
+    float: right;
+    color: #999 !important;
+    background-color: #fff !important;
+    border: 1px solid #999 ;
+    font-size: small !important;
 }
 
-li{
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    color: #aaa !important;
-    background: 0 0 !important;
-    border-radius: 10rem;
-    padding-right: .6em;
-    padding-left: .6em;
+.follow:hover{
+    background-color: #e6e6e6 !important;
+    color: #999 !important;
+}
+
+.header a{
+    background: #fff !important;
+    padding: .5em 1em;
+    color: #aaa;
+}
+.header a:hover{
+    color: #555a5a;
+    cursor: pointer;
+}
+
+.article{
+    border-top: 1px solid rgba(0, 0, 0, .1);
+    margin-top: .4em;
+}
+
+.author_info {
+    margin-top: 10px;
+
+    div {
+        align-items: center;
+
+        a img {
+            border-radius: 100%;
+            height: 32px;
+            width: 32px;
+        }
+
+        div {
+            margin-left: 5px;
+            flex-direction: column;
+
+            a {
+                color: #5cb85c !important;
+                text-decoration: none;
+            }
+
+            a:hover {
+                color: #428e42 !important;
+                text-decoration: underline !important;
+                cursor: pointer;
+            }
+
+            span {
+                font-size: 12px;
+                display: block;
+                color: #bbb;
+            }
+        }
+    }
+
+    div {
+        button {
+            font-size: 14px;
+            color: #5cb85c;
+            padding: 4px 8px;
+
+            span {
+                margin-left: 4px;
+            }
+        }
+
+        button:active,
+        button:hover {
+            color: white;
+            background-color: #5cb85c;
+            cursor: pointer;
+        }
+    }
+}
+
+.activated {
+    color: white !important;
+    background-color: #5cb85c !important;
+}
+
+.activated:hover {
+    background-color: #449d44 !important;
+    cursor: pointer;
+}
+
+.article_preview {
+    margin-top: 10px;
+
+    a {
+        h3 {
+            color: #373a3c;
+            font-size: 24px;
+        }
+
+        p {
+            color: #999999;
+        }
+
+        div {
+            display: flex;
+            justify-content: space-between;
+
+            span {
+                color: #bbbbbb;
+                font-size: 12.8px;
+                float: left;
+            }
+
+            ul {
+                color: #aaaaaa;
+                display: inline-block;
+                font-size: 12.8px;
+                list-style: none;
+            }
+
+            ul li {
+                float: right;
+                border: 1px solid #bebcbc;
+                margin-left: 4px;
+                padding-right: .6em;
+                padding-left: .6em;
+                border-radius: 10rem;
+            }
+        }
+    }
+}
+
+.sidebar {
+    div {
+        display: block;
+        background-color: #f3f3f3;
+        padding: 10px;
+
+        .tag_list {
+            display: flex;
+            flex-wrap: wrap;
+
+            a {
+                color: #fff;
+                background-color: #818a91;
+                font-size: .8rem;
+                padding: .1rem .6em;
+                margin-right: 3px;
+                margin-bottom: .2rem;
+                display: inline-block;
+                border-radius: 10rem;
+                text-decoration: none;
+            }
+        }
+    }
+
+}
+
+/* css cho item */
+.pageItem {
+    display: inline;
+}
+
+/* Định dạng cho liên kết của nút trang */
+.pageLink {
+    position: relative;
     float: left;
-    margin-left: 8px;
+    padding: .5rem .75rem;
+    margin-left: -1px;
+    color: #5cb85c;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.pageLink:hover {
+    text-decoration: underline;
+    background-color: #e5e5e5;
+    cursor: pointer;
+}
+
+
+/* Định dạng cho liên kết của nút trang được chọn */
+.active .pageLink {
+    color: white;
+    background-color: #5cb85c;
+    /* Màu chữ trắng */
 }

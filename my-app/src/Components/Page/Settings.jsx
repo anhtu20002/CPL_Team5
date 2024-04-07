@@ -91,63 +91,75 @@ export default function Settings({ setAuthStatus }) {
 
   return (
     <div>
-      <h2>Settings</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="image">Profile Image URL:</label>
-          <input
-            type="text"
-            id="image"
-            name="image"
-            value={user.image}
-            onChange={handleChange}
-          />
+      <div className="container">
+        <div className="row">
+          <div className="col-md-6 offset-md-3 col-xs-12">
+            <h1 className="text-center">Settings</h1>
+            <form onSubmit={handleSubmit}>
+              <fieldset className="mb-3 mx-auto">
+                <input
+                  className="form-control mx-0"
+                  type="text"
+                  id="image"
+                  name="image"
+                  value={user.image}
+                  onChange={handleChange}
+                  placeholder="URL of picture profile"
+                />
+              </fieldset>
+              <fieldset className="mb-3">
+                <input
+                  className="form-control form-control-lg"
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={user.username}
+                  onChange={handleChange}
+                  placeholder="Your Name"
+                />
+              </fieldset>
+              <fieldset className="mb-3">
+                <textarea
+                  rows={8}
+                  className="form-control form-control-lg"
+                  type="text"
+                  id="bio"
+                  name="bio"
+                  value={user.bio}
+                  onChange={handleChange}
+                  placeholder="Short bio about you"
+                />
+              </fieldset>
+              <fieldset className="mb-3">
+                <input
+                  className="form-control form-control-lg"
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={user.email}
+                  onChange={handleChange}
+                  placeholder="Email"
+                />
+              </fieldset>
+              <fieldset className="mb-3">
+                <input
+                  className="form-control form-control-lg"
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={user.password}
+                  onChange={handleChange}
+                  placeholder="Password"
+                />
+              </fieldset>
+              <button type="submit">Update Settings</button>
+            </form>
+            <button onClick={handleLogout} className="btn btn-danger">
+              Logout
+            </button>
+          </div>
         </div>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={user.username}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="bio">Bio:</label>
-          <textarea
-            type="text"
-            id="bio"
-            name="bio"
-            value={user.bio}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={user.email}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={user.password}
-            onChange={handleChange}
-          />
-        </div>
-        <button type="submit">Update Settings</button>
-      </form>
-      <button onClick={handleLogout} className="btn btn-danger">
-        Logout
-      </button>
+      </div>
     </div>
   );
 }

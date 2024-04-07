@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.active{
+  border-bottom: 2px solid #5cb85c !important;
+  color: #5cb85c !important;
+}

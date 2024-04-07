@@ -125,7 +125,7 @@ const Home = () => {
                   <a onClick={handleToggleFeed}>Global Feed</a>
                 </li>
                 {toggleTag === "" ? null : (
-                  <li className="nav-item" >
+                  <li className="nav-item">
                     <a onClick={() => handleToggleTag(toggleTag)}>
                       #{toggleTag}
                     </a>
@@ -140,11 +140,23 @@ const Home = () => {
                     className={`${styles.author_info} d-flex justify-content-between`}
                   >
                     <div className="d-flex ">
-                      <a href="#">
+                      <a
+                        href={
+                          `/profile/` +
+                          encodeURIComponent(article.author.username)
+                        }
+                      >
                         <img src={article.author.image} alt="" />
                       </a>
                       <div>
-                        <a href="#">{article.author.username}</a>
+                        <a
+                          href={
+                            `/profile/` +
+                            encodeURIComponent(article.author.username)
+                          }
+                        >
+                          {article.author.username}
+                        </a>
                         <span>{formatDate(article.createdAt)}</span>
                       </div>
                     </div>
