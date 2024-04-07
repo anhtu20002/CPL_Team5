@@ -1,0 +1,81 @@
+.details_container {
+    margin: 0;
+    padding: 0;
+}
+
+/* Article styles */
+.article {
+    background-color: #fff;
+    border-radius: 5px;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.article_title {
+    color: white;
+
+}
+
+p {
+    color: black;
+    align-items: center;
+    font-size: 20px;
+    justify-items: center;
+}
+/* Title styles */
+.head {
+    margin-bottom: 10px;
+    background-color: rgb(43, 42, 42);
+    width: 100%;
+}
+
+/* Author styles */
+.author_info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.author_avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.author_username {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.btn_follow {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn_favorite {
+    background-color: #28a745;
+    color: #fff;
+}
+
+/* Tag styles */
+.tag_list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.tag_default {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 5px 10px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+/* Loading message styles */
+.loading_message {
+    font-style: italic;
+}
