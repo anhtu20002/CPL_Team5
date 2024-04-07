@@ -11,7 +11,11 @@ const Home = () => {
   const [articles, setArticles] = useState([]);
   const [tags, setTags] = useState([]);
   const [fillTag, setFillTag] = useState("");
+  const [toggleTag, setToggleTag] = useState("");
   const [totalPages, setTotalPages] = useState(0);
+
+  //set avctive tag
+  const [activeTag, setActiveTag] = useState("");
 
   // fetch articles
   // useEffect(() => {
@@ -84,13 +88,16 @@ const Home = () => {
     event.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>
     console.log("Clicked tag:", tag);
     setFillTag(tag);
+    setToggleTag(tag);
+    setActiveTag(tag);
   };
 
   // toggle global feed
-  const handleToggle = (tag) => {
-    if (fillTag !== tag) {
-      setFillTag("");
-    }
+  const handleToggleFeed = () => {
+    setFillTag("");
+  };
+
+  const handleToggleTag = (tag) => {
     setFillTag(tag);
   };
 
@@ -109,21 +116,21 @@ const Home = () => {
         <p style={{ fontSize: "24px" }}>A place to share your knowledge.</p>
       </div>
 
-      <Container className="mt-5">
+      <Container className="mt-4">
         <Row>
           <Col md={9}>
-            <div className={`${styles.feed_toggle} my-3`}>
-              <ul>
+            <div className={`${styles.feed_toggle}`}>
+              <ul className="nav nav-pills outline-active">
                 <li>
-                  <a href onClick={() => handleToggle("")}>
-                    Global Feed
-                  </a>
+                  <a onClick={handleToggleFeed}>Global Feed</a>
                 </li>
-                <li>
-                  <a href onClick={() => handleToggle(fillTag)}>
-                    {fillTag}
-                  </a>
-                </li>
+                {toggleTag === "" ? null : (
+                  <li className="nav-item" >
+                    <a onClick={() => handleToggleTag(toggleTag)}>
+                      #{toggleTag}
+                    </a>
+                  </li>
+                )}
               </ul>
             </div>
             {articles.map((article, index) => {
@@ -181,7 +188,6 @@ const Home = () => {
               pageRangeDisplayed={totalPages}
               onPageChange={handlePageClick}
               pageClassName={styles.pageItem}
-              pageLinkClassName={styles.pageLink}
               containerClassName="pagination d-flex flex-wrap"
               previousClassName={styles.previous}
               previousLinkClassName={styles.pageLink}
@@ -196,7 +202,13 @@ const Home = () => {
               <div className={styles.tag_list}>
                 {tags.map((tag, index) => {
                   return (
-                    <a onClick={(event) => handleClickTags(event, tag)}>
+                    <a
+                      className={
+                        activeTag === tag ? styles.activeTag : styles.tag
+                      }
+                      href
+                      onClick={(event) => handleClickTags(event, tag)}
+                    >
                       {tag}
                     </a>
                   );
