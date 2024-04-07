@@ -10,6 +10,7 @@ import Article from "./Components/Page/Article";
 import Settings from "./Components/Page/Settings";
 import UserProfile from "./Components/Page/UserProfile";
 import UserFavorite from "./Components/Page/UserFavorite";
+import Details from "./Components/Page/Details";
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -38,6 +39,7 @@ const App = () => {
         <Route path="/profile/:username" element={<UserProfile />} />
         <Route path="/profile/:username/favorite" element={<UserFavorite />} />
       </Routes>
+      <Details />
     </div>
   );
 };
