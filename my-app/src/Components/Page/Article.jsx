@@ -39,24 +39,6 @@ export default function Article() {
   // Handler khi người dùng ấn nút đăng nhập
   const handleSubmit = async  (event) => {
     event.preventDefault();
-    // const jsonData = {
-    //   article: {
-    //     title: formData.title,
-    //     description: formData.about,
-    //     body: formData.content,
-    //     tagList: [formData.tags],
-    //   },
-    // };
-    // const dataTest = {
-    //   article: {
-    //     title: "string",
-    //     description: "string",
-    //     body: "string",
-    //     tagList: ["string"],
-    //   },
-    // };
-    // console.log(dataTest);
-    // console.log(jsonData);
     try {
       // Gọi API đăng nhập sử dụng phương thức postwithToken
      const response = await postwithToken(`${SERVER_API}/articles`, token, {
