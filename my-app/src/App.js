@@ -27,6 +27,7 @@ const App = () => {
       {authStatus === "AUTHENTICATED" ? <HomePage /> : <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/article/:slug" element={<Details/>}/>
         <Route
           path="/login"
           element={<Login setAuthStatus={setAuthStatus} />}
