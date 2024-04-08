@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import "../Assets/Login.css";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+// import "react-toastify/dist/ReactToastify.css";
 // import { useHistory } from "react-router-dom";
 const Login = ({ setAuthStatus }) => {
   const SERVER_API = "https://api.realworld.io/api";
@@ -46,7 +49,9 @@ const Login = ({ setAuthStatus }) => {
       });
       console.log(user);
       if (user === undefined) {
-        console.error("Đăng nhập thất bại:");
+        console.error("Đăng nhập thất bại");
+        toast("Email or password is invalid");
+        console.log(user.errors);
       } else {
         console.log("Đăng nhập thành công!", user);
         console.log(user.token);
@@ -74,13 +79,30 @@ const Login = ({ setAuthStatus }) => {
         }}
       >
         <div className="container-left">
-          <h2>Đăng nhập</h2>
-          <p>Vui lòng nhập email và password của bạn</p>
+          <h2>Sign In</h2>
+          <p
+            style={{
+              color: "#5CB85C",
+              textDecoration: "none",
+              textAlign: "center",
+            }}
+          >
+            <Link
+              to="/register"
+              style={{
+                color: "#5CB85C",
+                textDecoration: "none",
+                textAlign: "center",
+              }}
+            >
+              Need An Account
+            </Link>
+          </p>
         </div>
-        <div className="container-form">
+        <div className="container-form" style={{textAlign:"center"}}>
           <form className="form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="exampleInputEmail1">Email address</label>
+              {/* <label htmlFor="exampleInputEmail1">Email address</label> */}
               <input
                 type="email"
                 className="form-control"
@@ -91,12 +113,9 @@ const Login = ({ setAuthStatus }) => {
                 onChange={handleEmailChange}
                 required
               />
-              <small id="emailHelp" className="form-text text-muted">
-                We'll never share your email with anyone else.
-              </small>
             </div>
             <div className="form-group">
-              <label htmlFor="exampleInputPassword1">Password</label>
+              {/* <label htmlFor="exampleInputPassword1">Password</label> */}
               <input
                 type="password"
                 className="form-control"
@@ -107,7 +126,11 @@ const Login = ({ setAuthStatus }) => {
                 required
               />
             </div>
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="submit"
+              
+              // style={{ color: "#5CB85C" }}
+            >
               Submit
             </button>
           </form>

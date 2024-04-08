@@ -6,6 +6,7 @@ import styles from "./Home.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import ReactPaginate from "react-paginate";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const [articles, setArticles] = useState([]);
@@ -156,7 +157,9 @@ const Home = () => {
         <b className="logo-font" style={{ fontSize: "56px" }}>
           conduit
         </b>
-        <p style={{color: "white", fontSize: "24px" }}>A place to share your knowledge.</p>
+        <p style={{ color: "white", fontSize: "24px" }}>
+          A place to share your knowledge.
+        </p>
       </div>
 
       <Container className="mt-4">
@@ -225,10 +228,7 @@ const Home = () => {
                   </div>
 
                   <div className={styles.article_info}>
-                    <a
-                      href={`/article/${article.slug}`}
-                      style={{ textDecoration: "none" }}
-                    >
+                    <Link to={`/article/${article.slug}`}>
                       <h3>{article.title}</h3>
                       <p>{article.description}</p>
                       <div>
@@ -246,7 +246,7 @@ const Home = () => {
                           })}
                         </ul>
                       </div>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               );

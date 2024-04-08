@@ -12,6 +12,10 @@ import UserProfile from "./Components/Page/UserProfile";
 import UserFavorite from "./Components/Page/UserFavorite";
 import Details from "./Components/Page/Details";
 import Footer from "./Components/Footer";
+import DetailArticle from "./Components/Page/DetailArticle";
+// import  {ToastContainer } from  
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -40,8 +44,10 @@ const App = () => {
         />
         <Route path="/profile/:username" element={<UserProfile />} />
         <Route path="/profile/:username/favorites" element={<UserFavorite />} />
+        <Route path="/article/:slug" element={<DetailArticle/>} />
       </Routes>
       <Footer />
+      <ToastContainer/>
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import React , { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 const Signup = ({setAuthStatus}) => {
   const SERVER_API = "https://api.realworld.io/api";
   const [formData, setFormData] = useState({
@@ -57,8 +59,11 @@ const Signup = ({setAuthStatus}) => {
         // Nếu không thành công, xử lý lỗi từ server
         // const errorMessage = await response.text();
         // throw new Error(errorMessage);
-         console.error("Không có thông tin bài viết trả về từ máy chủ.");
-        console.log(response.errors.title);
+        console.error("Không có thông tin bài viết trả về từ máy chủ.");
+        toast("email " + response.errors.email[0]);
+        toast("username " + response.errors.username[0]);
+        console.log(response.errors.email[0]);
+        console.log(response.errors.username[0]);
       }
     } catch (error) {
       // Xử lý lỗi từ phía client hoặc server
@@ -71,10 +76,28 @@ const Signup = ({setAuthStatus}) => {
     <div>
       <div className="container-login">
         <div className="container-left">
-          <h2>Đăng kí</h2>
-          <p>Vui lòng nhập thông tin của bạn</p>
+          <h2>Sign Up</h2>
+          {/* <p>Vui lòng nhập thông tin của bạn</p> */}
+          <p
+            style={{
+              color: "#5CB85C",
+              textDecoration: "none",
+              textAlign: "center",
+            }}
+          >
+            <Link
+              to="/login"
+              style={{
+                color: "#5CB85C",
+                textDecoration: "none",
+                textAlign: "center",
+              }}
+            >
+              Have An Account
+            </Link>
+          </p>
         </div>
-        <div className="container-form">
+        <div className="container-form" style={{ textAlign: "center" }}>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <input
@@ -113,9 +136,7 @@ const Signup = ({setAuthStatus}) => {
                 required
               />
             </div>
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>
+            <button type="submit">Submit</button>
           </form>
         </div>
       </div>
