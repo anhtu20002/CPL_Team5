@@ -4,7 +4,7 @@ import { Link, NavLink } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <div
+    <footer
       style={{
         backgroundColor: "#f3f3f3",
         marginTop: "3rem",
@@ -35,7 +35,7 @@ const Footer = () => {
           . Code & design licensed under MIT.
         </span>
       </Container>
-    </div>
+    </footer>
   );
 };
 

@@ -67,7 +67,12 @@ const Login = ({ setAuthStatus }) => {
 
   return (
     <div>
-      <div className="container-login">
+      <div
+        className="container-login"
+        style={{
+          height: "82vh",
+        }}
+      >
         <div className="container-left">
           <h2>Đăng nhập</h2>
           <p>Vui lòng nhập email và password của bạn</p>
