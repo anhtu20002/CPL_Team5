@@ -31,7 +31,7 @@ const App = () => {
           path="/login"
           element={<Login setAuthStatus={setAuthStatus} />}
         />
-        <Route path="/register" element={<Signup />} />
+        <Route path="/register" element={<Signup setAuthStatus={setAuthStatus}/>} />
         <Route path="/editor" element={<Article />} />
         <Route
           path="/settings"

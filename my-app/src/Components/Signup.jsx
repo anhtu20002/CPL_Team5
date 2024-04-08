@@ -1,11 +1,11 @@
 import React , { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-const Signup = () => {
+const Signup = ({setAuthStatus}) => {
   const SERVER_API = "https://api.realworld.io/api";
   const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
+    username: "viet1",
+    email: "viet1@gmail.com",
+    password: "123456",
   });
   const navigate = useNavigate();
   const handleChange = (event) => {
@@ -24,8 +24,9 @@ const Signup = () => {
          "Content-Type": "application/json",
         //  Authorization: `Bearer ${accessToken}`,
        },
-       body: data,
+       body: JSON.stringify(data),
      });
+     console.log(JSON.stringify(data));
      console.log(data);
      return response.json();
    };
@@ -36,22 +37,33 @@ const Signup = () => {
     try {
       // Gọi API đăng ký sử dụng phương thức postwithToken
       const response = await postwithToken(`${SERVER_API}/users`, {
-        users:formData
+        user: {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        },
       });
       // Kiểm tra xem yêu cầu đã được thực hiện thành công hay không
-      if (response.ok) {
+      if (response.user) {
         // Nếu thành công, chuyển hướng đến trang chính
+        // navigate("/");
+        console.log(response.user);
+        localStorage.setItem("token", response.user.token);
+        localStorage.setItem("username", response.user.username);
+        localStorage.setItem("image", response.user.image);
+        setAuthStatus("AUTHENTICATED"); // Update authStatus
         navigate("/");
       } else {
         // Nếu không thành công, xử lý lỗi từ server
         // const errorMessage = await response.text();
         // throw new Error(errorMessage);
-        console.log("lỗi");
+         console.error("Không có thông tin bài viết trả về từ máy chủ.");
+        console.log(response.errors.title);
       }
     } catch (error) {
       // Xử lý lỗi từ phía client hoặc server
       console.error("Đăng ký thất bại:", error);
-      alert("Đã xảy ra lỗi khi đăng ký.");
+      // alert("Đã xảy ra lỗi khi đăng ký.");
     }
   };
 

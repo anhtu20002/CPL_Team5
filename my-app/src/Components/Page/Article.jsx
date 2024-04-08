@@ -5,10 +5,10 @@ export default function Article() {
   const token = localStorage.getItem("token");
   const SERVER_API = "https://api.realworld.io/api";
   const [formData, setFormData] = useState({
-    title: "11",
-    content: "11",
-    about: "11",
-    tags: "11",
+    title: "test 3",
+    content: "test 3",
+    about: "test 3",
+    tags: "test 3",
   });
 
   // const [errorMessage, setErrorMessage] = useState("");
@@ -21,7 +21,7 @@ export default function Article() {
       [name]: value,
     });
   };
-  console.log(formData);
+  // console.log(formData);
   const postwithToken = async (url, token, data) => {
     const response = await fetch(url, {
       method: "POST",
@@ -31,6 +31,7 @@ export default function Article() {
       },
       body: JSON.stringify(data),
     });
+    console.log(JSON.stringify(data));
     console.log("Data: ",data);
     return response.json();
   };
@@ -38,18 +39,41 @@ export default function Article() {
   // Handler khi người dùng ấn nút đăng nhập
   const handleSubmit = async  (event) => {
     event.preventDefault();
-
+    // const jsonData = {
+    //   article: {
+    //     title: formData.title,
+    //     description: formData.about,
+    //     body: formData.content,
+    //     tagList: [formData.tags],
+    //   },
+    // };
+    // const dataTest = {
+    //   article: {
+    //     title: "string",
+    //     description: "string",
+    //     body: "string",
+    //     tagList: ["string"],
+    //   },
+    // };
+    // console.log(dataTest);
+    // console.log(jsonData);
     try {
       // Gọi API đăng nhập sử dụng phương thức postwithToken
      const response = await postwithToken(`${SERVER_API}/articles`, token, {
-       article: formData,
+       article: {
+         title: formData.title,
+         description: formData.about,
+         body: formData.content,
+         tagList: [formData.tags],
+       },
      });
-     console.log(response.data);
+    //  console.log(response.data);
      if (response.article) {
        console.log("Đăng bài thành công!", response.article.title);
        // Thực hiện các thao tác tiếp theo sau khi đăng bài thành công
      } else {
        console.error("Không có thông tin bài viết trả về từ máy chủ.");
+       console.log(response.errors.title);
      }
       // Xử lý khi đăng nhập thành công
     } catch (error) {
