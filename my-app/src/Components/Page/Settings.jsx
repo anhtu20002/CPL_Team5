@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import styles from "./Settings.module.css";
 
 export default function Settings({ setAuthStatus }) {
   const navigate = useNavigate();
@@ -94,69 +95,89 @@ export default function Settings({ setAuthStatus }) {
       <div className="container">
         <div className="row">
           <div className="col-md-6 offset-md-3 col-xs-12">
-            <h1 className="text-center">Settings</h1>
-            <form onSubmit={handleSubmit}>
-              <fieldset className="mb-3 mx-auto">
-                <input
-                  className="form-control mx-0"
-                  type="text"
-                  id="image"
-                  name="image"
-                  value={user.image}
-                  onChange={handleChange}
-                  placeholder="URL of picture profile"
-                />
-              </fieldset>
-              <fieldset className="mb-3">
-                <input
-                  className="form-control form-control-lg"
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={user.username}
-                  onChange={handleChange}
-                  placeholder="Your Name"
-                />
-              </fieldset>
-              <fieldset className="mb-3">
-                <textarea
-                  rows={8}
-                  className="form-control form-control-lg"
-                  type="text"
-                  id="bio"
-                  name="bio"
-                  value={user.bio}
-                  onChange={handleChange}
-                  placeholder="Short bio about you"
-                />
-              </fieldset>
-              <fieldset className="mb-3">
-                <input
-                  className="form-control form-control-lg"
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={user.email}
-                  onChange={handleChange}
-                  placeholder="Email"
-                />
-              </fieldset>
-              <fieldset className="mb-3">
-                <input
-                  className="form-control form-control-lg"
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={user.password}
-                  onChange={handleChange}
-                  placeholder="Password"
-                />
-              </fieldset>
-              <button type="submit">Update Settings</button>
-            </form>
-            <button onClick={handleLogout} className="btn btn-danger">
-              Logout
-            </button>
+            <h1 className="text-center fw-normal">Your Settings</h1>
+            <div className="container d-flex justify-content-center mb-3">
+              <form
+                onSubmit={handleSubmit}
+                style={{ borderBottom: "1px solid #e5e5e5" }}
+              >
+                <fieldset>
+                  <fieldset className="mb-3 mx-auto">
+                    <input
+                      className="form-control mx-0"
+                      type="text"
+                      id="image"
+                      name="image"
+                      value={user.image}
+                      onChange={handleChange}
+                      placeholder="URL of picture profile"
+                    />
+                  </fieldset>
+                  <fieldset className="mb-3">
+                    <input
+                      className="form-control form-control-lg"
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={user.username}
+                      onChange={handleChange}
+                      placeholder="Your Name"
+                    />
+                  </fieldset>
+                  <fieldset className="mb-3">
+                    <textarea
+                      rows={8}
+                      className="form-control form-control-lg"
+                      type="text"
+                      id="bio"
+                      name="bio"
+                      value={user.bio}
+                      onChange={handleChange}
+                      placeholder="Short bio about you"
+                    />
+                  </fieldset>
+                  <fieldset className="mb-3">
+                    <input
+                      className="form-control form-control-lg"
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={user.email}
+                      onChange={handleChange}
+                      placeholder="Email"
+                    />
+                  </fieldset>
+                  <fieldset className="mb-3">
+                    <input
+                      className="form-control form-control-lg"
+                      type="password"
+                      id="password"
+                      name="password"
+                      value={user.password}
+                      onChange={handleChange}
+                      placeholder="Password"
+                    />
+                  </fieldset>
+                  <div>
+                    <button
+                      className={`${styles.upd_btn} btn btn-lg mb-3`}
+                      type="submit"
+                    >
+                      Update Settings
+                    </button>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+            <div>
+              <button
+                onClick={handleLogout}
+                className={`btn ${styles.btn_logout}`}
+                style={{ float: "left" }}
+              >
+                Or click here to logout.
+              </button>
+            </div>
           </div>
         </div>
       </div>

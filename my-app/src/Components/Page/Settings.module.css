@@ -1,0 +1,20 @@
+.upd_btn{
+    float: right !important;
+    background-color: #5cb85c !important;
+    color: white !important;
+}
+
+.upd_btn:hover{
+    background-color: #449d44 !important;
+}
+
+.btn_logout{
+    margin-left: 4.2rem !important;
+    border: 1px solid #b85c5c !important;
+    color:#b85c5c !important;
+}
+
+.btn_logout:hover{
+    background-color: #b85c5c !important;
+    color: white !important;
+}
