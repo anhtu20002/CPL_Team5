@@ -11,6 +11,7 @@ import Settings from "./Components/Page/Settings";
 import UserProfile from "./Components/Page/UserProfile";
 import UserFavorite from "./Components/Page/UserFavorite";
 import Details from "./Components/Page/Details";
+import Footer from "./Components/Footer";
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -39,6 +40,7 @@ const App = () => {
         <Route path="/profile/:username" element={<UserProfile />} />
         <Route path="/profile/:username/favorites" element={<UserFavorite />} />
       </Routes>
+      <Footer />
     </div>
   );
 };

@@ -7,56 +7,58 @@
         color: rgb(167, 167, 167);
         font-size: 18px;
         margin-right: 20px;
-        border-bottom: 5px solid #5cb85c;
     }
 }
 
-.author_info {
-    margin-top: 15px;
-
-    div {
-        align-items: center;
-
-        a img {
-            border-radius: 100%;
-        }
-
+.title {
+    border-top: 1px solid ;
+    .author_info {
+        margin-top: 15px;
+    
         div {
-            margin-left: 5px;
-            flex-direction: column;
-
-            a {
+            align-items: center;
+    
+            a img {
+                border-radius: 100%;
+            }
+    
+            div {
+                margin-left: 5px;
+                flex-direction: column;
+    
+                a {
+                    color: #5cb85c;
+                    text-decoration: none;
+                }
+    
+                a:hover {
+                    color: #428e42;
+                    text-decoration: underline;
+                }
+    
+                span {
+                    font-size: 12px;
+                    display: block;
+                }
+            }
+        }
+    
+        div {
+            button {
+                font-size: 14px;
                 color: #5cb85c;
-                text-decoration: none;
+                padding: 4px 8px;
+    
+                span {
+                    margin-left: 4px;
+                }
             }
-
-            a:hover {
-                color: #428e42;
-                text-decoration: underline;
+    
+            button:active,
+            button:hover {
+                color: white;
+                background-color: #5cb85c;
             }
-
-            span {
-                font-size: 12px;
-                display: block;
-            }
-        }
-    }
-
-    div {
-        button {
-            font-size: 14px;
-            color: #5cb85c;
-            padding: 4px 8px;
-
-            span {
-                margin-left: 4px;
-            }
-        }
-
-        button:active,
-        button:hover {
-            color: white;
-            background-color: #5cb85c;
         }
     }
 }

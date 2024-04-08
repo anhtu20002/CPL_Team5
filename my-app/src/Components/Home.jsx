@@ -13,48 +13,91 @@ const Home = () => {
   const [fillTag, setFillTag] = useState("");
   const [toggleTag, setToggleTag] = useState("");
   const [totalPages, setTotalPages] = useState(0);
+  const [isFetchingFromFeed, setIsFetchingFromFeed] = useState(true);
 
   //set avctive tag
+  const [activeItem, setActiveItem] = useState("yourFeed");
   const [activeTag, setActiveTag] = useState("");
-
-  // fetch articles
-  // useEffect(() => {
-  //   fetch("https://api.realworld.io/api/articles")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data.articles);
-  //       setArticles(data.articles);
-  //       setTotalPages(Math.ceil(data.articlesCount / 10));
-  //     })
-  //     .catch((err) => {
-  //       console.log(err.message);
-  //     });
-  // }, []);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    getArticles(fillTag, 0);
+    if (token) {
+      if (!isFetchingFromFeed) {
+        getArticles(fillTag, 0, token);
+        console.log("check");
+      } else {
+        getArticlesFromFeed(0, token); // New function to fetch from feed
+      }
+    }
+    getArticles(fillTag, 0, false);
     console.log(fillTag);
-  }, [fillTag]);
+  }, [fillTag, isFetchingFromFeed, token]);
 
-  // lấy articles theo offset
-  const getArticles = async (fillTag, offset) => {
-    let res = await fetchArticles(fillTag, offset);
+  // lấy articles theo offset, filltag
+  const getArticles = async (fillTag, offset, token) => {
+    let res = await fetchArticles(fillTag, offset, token);
     let data = await res.json();
+
+    console.log(data.articles);
     setArticles(data.articles);
     setTotalPages(Math.ceil(data.articlesCount / 10));
   };
 
+  // const fetchArticlesFromFeed = async (offset, token) => {
+  //   console.log("check");
+  //   try {
+  //     const res = await fetch(
+  //       `api.realworld.io/api/articles/feed?offset=${offset}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     const data = await res.json();
+  //     setArticles(data.articles);
+
+  //     setTotalPages(Math.ceil(data.articlesCount / 10));
+  //   } catch (err) {
+  //     console.error("Error fetching articles from feed:", err);
+  //   }
+  // };
+
   // truyền offset vào api
-  const fetchArticles = (fillTag, offset) => {
+  const fetchArticles = (fillTag, offset, token) => {
+    console.log(token);
     if (fillTag.trim().length > 0) {
       return fetch(
-        "https://api.realworld.io/api/articles?tag=" +
-          fillTag +
-          "&offset=" +
-          offset
+        `https://api.realworld.io/api/articles?tag=${fillTag}&offset=${offset}`
       );
-    }
-    return fetch("https://api.realworld.io/api/articles?offset=" + offset);
+    } else if (token) {
+      return fetch(`https://api.realworld.io/api/articles?offset=${offset}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else
+      return fetch("https://api.realworld.io/api/articles?offset=" + offset);
+  };
+
+  const getArticlesFromFeed = async (offset, token) => {
+    let res = await fetchArticlesFromFeed(offset, token);
+    let data = await res.json();
+
+    console.log("chekc");
+    console.log(data.articles);
+    setArticles(data.articles);
+    setTotalPages(Math.ceil(data.articlesCount / 10));
+  };
+  const fetchArticlesFromFeed = (offset, token) => {
+    return fetch(
+      `https://api.realworld.io/api/articles/feed?offset=${offset}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   };
 
   // fetch Tags
@@ -80,6 +123,14 @@ const Home = () => {
   // lấy số trang, set offset
   const handlePageClick = (event) => {
     console.log("event thư viện page: ", event);
+    if (token) {
+      if (!isFetchingFromFeed) {
+        getArticles(fillTag, event.selected * 10, token);
+        console.log("check");
+      } else {
+        getArticlesFromFeed(event.selected * 10, token); // New function to fetch from feed
+      }
+    }
     getArticles(fillTag, event.selected * 10);
   };
 
@@ -89,16 +140,27 @@ const Home = () => {
     console.log("Clicked tag:", tag);
     setFillTag(tag);
     setToggleTag(tag);
+    setActiveItem(tag);
     setActiveTag(tag);
+  };
+
+  //toggle your feed
+  const handleFetchFromFeed = () => {
+    setActiveItem("yourFeed");
+    setIsFetchingFromFeed(true);
   };
 
   // toggle global feed
   const handleToggleFeed = () => {
+    setActiveItem("globalFeed");
+    setIsFetchingFromFeed(false);
     setFillTag("");
   };
 
   const handleToggleTag = (tag) => {
+    setActiveItem(tag);
     setFillTag(tag);
+    setIsFetchingFromFeed(false);
   };
 
   return (
@@ -121,11 +183,20 @@ const Home = () => {
           <Col md={9}>
             <div className={`${styles.feed_toggle}`}>
               <ul className="nav nav-pills outline-active">
-                <li>
+                {token ? (
+                  <li className={activeItem === "yourFeed" ? "active" : ""}>
+                    <a onClick={handleFetchFromFeed}>Your Feed</a>
+                  </li>
+                ) : null}
+                <li className={activeItem === "globalFeed" ? "active" : ""}>
                   <a onClick={handleToggleFeed}>Global Feed</a>
                 </li>
                 {toggleTag === "" ? null : (
-                  <li className="nav-item">
+                  <li
+                    className={`nav-item ${
+                      activeItem === toggleTag ? "active" : ""
+                    }`}
+                  >
                     <a onClick={() => handleToggleTag(toggleTag)}>
                       #{toggleTag}
                     </a>
@@ -135,7 +206,7 @@ const Home = () => {
             </div>
             {articles.map((article, index) => {
               return (
-                <div>
+                <div  key={index} className={styles.title}>
                   <div
                     className={`${styles.author_info} d-flex justify-content-between`}
                   >
@@ -146,7 +217,11 @@ const Home = () => {
                           encodeURIComponent(article.author.username)
                         }
                       >
-                        <img src={article.author.image} alt="" />
+                        <img
+                          style={{ width: "32px", height: "32px" }}
+                          src={article.author.image}
+                          alt=""
+                        />
                       </a>
                       <div>
                         <a
@@ -200,6 +275,7 @@ const Home = () => {
               pageRangeDisplayed={totalPages}
               onPageChange={handlePageClick}
               pageClassName={styles.pageItem}
+              pageLinkClassName={styles.pageLink}
               containerClassName="pagination d-flex flex-wrap"
               previousClassName={styles.previous}
               previousLinkClassName={styles.pageLink}
