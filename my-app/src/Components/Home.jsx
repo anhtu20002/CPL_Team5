@@ -24,13 +24,13 @@ const Home = () => {
     if (token) {
       if (!isFetchingFromFeed) {
         getArticles(fillTag, 0, token);
-        console.log("check");
       } else {
         getArticlesFromFeed(0, token); // New function to fetch from feed
       }
+    } else {
+      getArticles(fillTag, 0, false);
+      console.log(fillTag);
     }
-    getArticles(fillTag, 0, false);
-    console.log(fillTag);
   }, [fillTag, isFetchingFromFeed, token]);
 
   // lấy articles theo offset, filltag
@@ -38,30 +38,11 @@ const Home = () => {
     let res = await fetchArticles(fillTag, offset, token);
     let data = await res.json();
 
+    console.log("Check fetch");
     console.log(data.articles);
     setArticles(data.articles);
     setTotalPages(Math.ceil(data.articlesCount / 10));
   };
-
-  // const fetchArticlesFromFeed = async (offset, token) => {
-  //   console.log("check");
-  //   try {
-  //     const res = await fetch(
-  //       `api.realworld.io/api/articles/feed?offset=${offset}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  //     const data = await res.json();
-  //     setArticles(data.articles);
-
-  //     setTotalPages(Math.ceil(data.articlesCount / 10));
-  //   } catch (err) {
-  //     console.error("Error fetching articles from feed:", err);
-  //   }
-  // };
 
   // truyền offset vào api
   const fetchArticles = (fillTag, offset, token) => {
@@ -84,7 +65,6 @@ const Home = () => {
     let res = await fetchArticlesFromFeed(offset, token);
     let data = await res.json();
 
-    console.log("chekc");
     console.log(data.articles);
     setArticles(data.articles);
     setTotalPages(Math.ceil(data.articlesCount / 10));
@@ -130,8 +110,9 @@ const Home = () => {
       } else {
         getArticlesFromFeed(event.selected * 10, token); // New function to fetch from feed
       }
+    } else {
+      getArticles(fillTag, event.selected * 10);
     }
-    getArticles(fillTag, event.selected * 10);
   };
 
   // fill tags
@@ -175,7 +156,7 @@ const Home = () => {
         <b className="logo-font" style={{ fontSize: "56px" }}>
           conduit
         </b>
-        <p style={{ fontSize: "24px" }}>A place to share your knowledge.</p>
+        <p style={{color: "white", fontSize: "24px" }}>A place to share your knowledge.</p>
       </div>
 
       <Container className="mt-4">
@@ -206,7 +187,7 @@ const Home = () => {
             </div>
             {articles.map((article, index) => {
               return (
-                <div  key={index} className={styles.title}>
+                <div key={index} className={styles.title}>
                   <div
                     className={`${styles.author_info} d-flex justify-content-between`}
                   >
@@ -244,7 +225,10 @@ const Home = () => {
                   </div>
 
                   <div className={styles.article_info}>
-                    <a href={`/article/${article.slug}`} style={{ textDecoration: "none" }}>
+                    <a
+                      href={`/article/${article.slug}`}
+                      style={{ textDecoration: "none" }}
+                    >
                       <h3>{article.title}</h3>
                       <p>{article.description}</p>
                       <div>

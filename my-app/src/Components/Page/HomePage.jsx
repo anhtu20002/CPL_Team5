@@ -9,10 +9,10 @@ const HomePage = () => {
   return (
     <Container className={styles.header}>
       <Link
-        style={{ color: "#5cb85c", fontSize: "30px", textDecoration: "none" }}
+        style={{ color: "#5cb85c", fontSize: "28px", textDecoration: "none" }}
         to="/"
       >
-        <strong>Conduit</strong>
+        <strong>conduit</strong>
       </Link>
       <div>
         <NavLink
