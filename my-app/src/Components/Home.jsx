@@ -244,7 +244,7 @@ const Home = () => {
                   </div>
 
                   <div className={styles.article_info}>
-                    <a href="#" style={{ textDecoration: "none" }}>
+                    <a href={`/article/${article.slug}`} style={{ textDecoration: "none" }}>
                       <h3>{article.title}</h3>
                       <p>{article.description}</p>
                       <div>
