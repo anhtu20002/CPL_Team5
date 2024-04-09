@@ -332,7 +332,7 @@ export default function UserFavorite() {
                 <p className="mt-3 text-center">No articles are here... yet.</p>
               )}
             </div>
-            <footer style={{ position: "absolute" }}>
+            <div>
               {totalPages > 0 && (
                 <ReactPaginate
                   nextLabel=">"
@@ -351,7 +351,7 @@ export default function UserFavorite() {
                   activeClassName={styles.active}
                 />
               )}
-            </footer>
+            </div>
           </div>
         </div>
       )}

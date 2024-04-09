@@ -12,6 +12,16 @@ code {
     monospace;
 }
 
+html {
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+footer {
+  position: absolute;
+}
+
 .active{
   border-bottom: 2px solid #5cb85c !important;
   color: #5cb85c !important;

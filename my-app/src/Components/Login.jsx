@@ -79,7 +79,7 @@ const Login = ({ setAuthStatus }) => {
         }}
       >
         <div className="container-left">
-          <h2>Sign In</h2>
+          <h2>Sign in</h2>
           <p
             style={{
               color: "#5CB85C",
@@ -95,11 +95,11 @@ const Login = ({ setAuthStatus }) => {
                 textAlign: "center",
               }}
             >
-              Need An Account
+              Need An Account?
             </Link>
           </p>
         </div>
-        <div className="container-form" style={{textAlign:"center"}}>
+        <div className="container-form" style={{ textAlign: "center" }}>
           <form className="form" onSubmit={handleSubmit}>
             <div className="form-group">
               {/* <label htmlFor="exampleInputEmail1">Email address</label> */}
@@ -128,10 +128,16 @@ const Login = ({ setAuthStatus }) => {
             </div>
             <button
               type="submit"
-              
+              style={{
+                float: "right",
+                borderRadius: "5px",
+                fontSize: "1.2rem",
+                marginTop: "5px",
+              }}
+
               // style={{ color: "#5CB85C" }}
             >
-              Submit
+              Sign in
             </button>
           </form>
         </div>

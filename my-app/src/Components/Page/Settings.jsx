@@ -39,6 +39,8 @@ export default function Settings({ setAuthStatus }) {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("image");
     setAuthStatus("UNAUTHENTICATED");
     navigate("/login");
   };
@@ -78,7 +80,9 @@ export default function Settings({ setAuthStatus }) {
 
       if (isEmailChanged || isPasswordChanged) {
         alert("Email or password successfully updated. Please log in again.");
-        localStorage.removeItem("token"); // Remove token for security
+        localStorage.removeItem("username");
+        localStorage.removeItem("image");
+        localStorage.removeItem("token");
         setAuthStatus("UNAUTHENTICATED");
         navigate("/login");
       } else {

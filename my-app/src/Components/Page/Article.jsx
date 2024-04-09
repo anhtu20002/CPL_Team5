@@ -68,7 +68,7 @@ export default function Article() {
 
  
   return (
-    <div className="container" style={{textAlign:"center"}}>
+    <div className="container col-8 mt-5" style={{textAlign:"center"}}>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <div className="mb-3">
           <input
@@ -96,7 +96,7 @@ export default function Article() {
         </div>
         <div className="mb-3">
           <textarea
-            placeholder="Write your article(in markdown)"
+            placeholder="Write your article (in markdown)"
             className="form-control"
             id="content"
             name="content"
@@ -131,10 +131,10 @@ export default function Article() {
             color: "white",
             border: "none",
             fontSize:"18px",
-            padding: "20px 30px",
-            marginTop: "20px",
-            borderRadius: "15px",
-            
+            padding: "10px 25px",
+            marginTop: "10px",
+            borderRadius: "5px",
+            float:'right'
           }}
         >
           Publish Article

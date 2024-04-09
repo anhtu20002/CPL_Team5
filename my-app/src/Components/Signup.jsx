@@ -1,8 +1,8 @@
-import React , { useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-const Signup = ({setAuthStatus}) => {
+const Signup = ({ setAuthStatus }) => {
   const SERVER_API = "https://api.realworld.io/api";
   const [formData, setFormData] = useState({
     username: "viet1",
@@ -19,19 +19,19 @@ const Signup = ({setAuthStatus}) => {
   };
   console.log(formData);
 
-   const postwithToken = async (url, data) => {
-     const response = await fetch(url, {
-       method: "POST",
-       headers: {
-         "Content-Type": "application/json",
+  const postwithToken = async (url, data) => {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
         //  Authorization: `Bearer ${accessToken}`,
-       },
-       body: JSON.stringify(data),
-     });
-     console.log(JSON.stringify(data));
-     console.log(data);
-     return response.json();
-   };
+      },
+      body: JSON.stringify(data),
+    });
+    console.log(JSON.stringify(data));
+    console.log(data);
+    return response.json();
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -93,7 +93,7 @@ const Signup = ({setAuthStatus}) => {
                 textAlign: "center",
               }}
             >
-              Have An Account
+              Have An Account?
             </Link>
           </p>
         </div>
@@ -136,7 +136,17 @@ const Signup = ({setAuthStatus}) => {
                 required
               />
             </div>
-            <button type="submit">Submit</button>
+            <button
+              style={{
+                float: "right",
+                borderRadius: "5px",
+                fontSize: "1.2rem",
+                marginTop: "5px",
+              }}
+              type="submit"
+            >
+              Sign up
+            </button>
           </form>
         </div>
       </div>
