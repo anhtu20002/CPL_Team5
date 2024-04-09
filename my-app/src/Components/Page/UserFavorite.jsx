@@ -16,7 +16,6 @@ export default function UserFavorite() {
   const [isLoadingArticles, setIsLoadingArticles] = useState(true);
   const [isLoadingPagination, setIsLoadingPagination] = useState(false);
   const { username } = useParams();
-  const [deletedArticles, setDeletedArticles] = useState([]);
   const [currentPage, setCurrentPage] = useState(0); // Page number (0-based)
   const [itemsPerPage, setItemsPerPage] = useState(5); // Articles per page
   const [totalPages, setTotalPages] = useState(0);
@@ -189,7 +188,7 @@ export default function UserFavorite() {
     <div>
       {isLoadingArticles && isLoadingProfile ? (
         <div style={{ margin: "auto", width: "1%" }}>
-          <Spinner animation="grow" variant="success" />
+          <Spinner animation="border" variant="success" />
         </div>
       ) : (
         <div className="">
@@ -253,11 +252,10 @@ export default function UserFavorite() {
             <div>
               {isLoadingPagination ? (
                 <div style={{ margin: "auto", width: "1%" }}>
-                  <Spinner animation="grow" variant="success" />
+                  <Spinner animation="border" variant="success" />
                 </div>
               ) : articles.length > 0 && !isLoadingPagination ? (
                 articles.map((article) =>
-                  !deletedArticles.includes(article.slug) &&
                   (article.favorited || !article.favorited) ? (
                     <div
                       key={article.slug}

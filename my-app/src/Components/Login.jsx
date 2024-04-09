@@ -57,7 +57,6 @@ const Login = ({ setAuthStatus }) => {
         console.log(user.token);
         localStorage.setItem("token", user.token);
         localStorage.setItem("username", user.username);
-        localStorage.setItem("image", user.image);
         setAuthStatus("AUTHENTICATED"); // Update authStatus
         navigate("/");
         // history.push("/")

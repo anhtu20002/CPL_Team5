@@ -52,7 +52,6 @@ const Signup = ({ setAuthStatus }) => {
         console.log(response.user);
         localStorage.setItem("token", response.user.token);
         localStorage.setItem("username", response.user.username);
-        localStorage.setItem("image", response.user.image);
         setAuthStatus("AUTHENTICATED"); // Update authStatus
         navigate("/");
       } else {

@@ -185,7 +185,7 @@ export default function UserProfile() {
     <div className="">
       {isLoadingArticles && isLoadingProfile ? (
         <div style={{ margin: "auto", width: "1%" }}>
-          <Spinner animation="grow" variant="success" />
+          <Spinner animation="border" variant="success" />
         </div>
       ) : (
         <div className="">
@@ -319,7 +319,7 @@ export default function UserProfile() {
               </div>
             ) : isLoadingPagination ? (
               <div style={{ margin: "auto", width: "1%" }}>
-                <Spinner animation="grow" variant="success" />
+                <Spinner animation="border" variant="success" />
               </div>
             ) : (
               <p>No articles found.</p>
