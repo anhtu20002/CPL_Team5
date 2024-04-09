@@ -18,6 +18,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [myProfile, setMyProfile]= useState([]);
 
   const [authStatus, setAuthStatus] = useState("UNAUTHENTICATED");
 
@@ -26,9 +27,27 @@ const App = () => {
     setAuthStatus(token ? "AUTHENTICATED" : "UNAUTHENTICATED");
   }, [localStorage.getItem("token")]);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    const fetchData = async () => {
+      const response = await fetch(
+        "https://api.realworld.io/api/user",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      setMyProfile(data);
+    };
+
+    fetchData();
+  }, [myProfile]);
+
   return (
     <div className="App">
-      {authStatus === "AUTHENTICATED" ? <HomePage /> : <Header />}
+      {authStatus === "AUTHENTICATED" ? <HomePage myProfile={myProfile}/> : <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
         {/* <Route path="/article/:slug" element={<Details/>}/> */}
@@ -42,8 +61,8 @@ const App = () => {
           path="/settings"
           element={<Settings setAuthStatus={setAuthStatus} />}
         />
-        <Route path="/profile/:username" element={<UserProfile />} />
-        <Route path="/profile/:username/favorites" element={<UserFavorite />} />
+        <Route path="/profile/:username" element={<UserProfile myProfile={myProfile}/>} />
+        <Route path="/profile/:username/favorites" element={<UserFavorite myProfile={myProfile} />} />
         <Route path="/article/:slug" element={<DetailArticle/>} />
       </Routes>
       <Footer />

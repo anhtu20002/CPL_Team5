@@ -7,7 +7,7 @@ import ReactPaginate from "react-paginate";
 import styles from "./UserProfile.module.css";
 import Spinner from "react-bootstrap/Spinner";
 
-export default function UserFavorite() {
+export default function UserFavorite({myProfile}) {
   const [articles, setArticles] = useState([]);
   const [user, setUser] = useState([]);
   const [follow, setFollow] = useState(false);
@@ -93,8 +93,6 @@ export default function UserFavorite() {
 
     fetchUserProfile();
   }, [username, follow]);
-
-  console.log(articles);
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -206,7 +204,7 @@ export default function UserFavorite() {
                 />
                 <h4 className="fw-bold">{user.profile?.username}</h4>
                 <p style={{ color: "#b6b4b6" }}>{user.profile?.bio}</p>
-                {username === localStorage.getItem("username") ? (
+                {username === myProfile.user?.username ? (
                   <button
                     onClick={() => nav("/settings")}
                     className={`${styles.follow} btn btn-sm btn-outline-secondary`}

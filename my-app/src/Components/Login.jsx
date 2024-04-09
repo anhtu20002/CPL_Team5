@@ -56,7 +56,6 @@ const Login = ({ setAuthStatus }) => {
         console.log("Đăng nhập thành công!", user);
         console.log(user.token);
         localStorage.setItem("token", user.token);
-        localStorage.setItem("username", user.username);
         setAuthStatus("AUTHENTICATED"); // Update authStatus
         navigate("/");
         // history.push("/")

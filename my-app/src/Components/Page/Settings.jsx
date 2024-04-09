@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Settings.module.css";
 import Spinner from "react-bootstrap/Spinner";
+import { toast } from "react-toastify";
 
 export default function Settings({ setAuthStatus }) {
   const [isloading, setIsLoading] = useState(true);
+  const [isUpdateSuccess, setIsUpdateSuccess] = useState(false);
+  const [previousUserData, setPreviousUserData] = useState(null);
   const navigate = useNavigate();
   const [user, setUser] = useState({
     email: "",
@@ -27,7 +30,8 @@ export default function Settings({ setAuthStatus }) {
           throw new Error("Failed to fetch user data");
         }
         const data = await response.json();
-        setUser(data.user);
+        setUser({ ...data.user });
+        setPreviousUserData({ ...data.user }); 
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -38,11 +42,11 @@ export default function Settings({ setAuthStatus }) {
     if (token) {
       fetchUserData();
     }
-  }, [token]);
+  }, [token, isUpdateSuccess]);
+
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("username");
     setAuthStatus("UNAUTHENTICATED");
     navigate("/login");
   };
@@ -58,6 +62,7 @@ export default function Settings({ setAuthStatus }) {
     // if (!isValidForm()) {
     //   return;
     // }
+    
 
     try {
       const response = await fetch(`https://api.realworld.io/api/user`, {
@@ -75,25 +80,31 @@ export default function Settings({ setAuthStatus }) {
 
       const updatedData = await response.json();
       setUser(updatedData.user); // Update local state with updated data
+      setIsUpdateSuccess(true);
 
       // Check if email or password changed
-      const isEmailChanged = user.email !== updatedData.user.email;
+      const isEmailChanged = previousUserData.email !== updatedData.user.email;
       const isPasswordChanged = user.password !== updatedData.user.password;
 
       if (isEmailChanged || isPasswordChanged) {
-        alert("Email or password successfully updated. Please log in again.");
-        localStorage.removeItem("username");
+        toast.success(
+          "Email or password successfully updated! Please log in again."
+        );
         localStorage.removeItem("token");
         setAuthStatus("UNAUTHENTICATED");
         navigate("/login");
       } else {
         console.log("Other user settings updated successfully!"); // Or display a success message
+        console.log(isEmailChanged)
       }
     } catch (error) {
       console.error("Error updating user settings:", error);
+      toast.error("Email or Username already exists");
+      setIsUpdateSuccess(false);
       // Handle errors gracefully, e.g., display an error message to the user
     }
   };
+
 
   return (
     <div>
@@ -102,7 +113,9 @@ export default function Settings({ setAuthStatus }) {
           <div className="col-md-6 offset-md-3 col-xs-12">
             <h1 className="text-center fw-normal">Your Settings</h1>
             {isloading ? (
-              <div style={{ margin: "auto", width: "1%", paddingRight:'30px' }}>
+              <div
+                style={{ margin: "auto", width: "1%", paddingRight: "30px" }}
+              >
                 <Spinner animation="border" variant="success" />
               </div>
             ) : (
@@ -171,6 +184,16 @@ export default function Settings({ setAuthStatus }) {
                         />
                       </fieldset>
                       <div>
+                        {!isUpdateSuccess ? (
+                          ""
+                        ) : (
+                          <span
+                            className="text-success"
+                            style={{ float: "left" }}
+                          >
+                            Update settings successfully
+                          </span>
+                        )}
                         <button
                           className={`${styles.upd_btn} btn btn-lg mb-3`}
                           type="submit"
