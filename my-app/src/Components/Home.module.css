@@ -154,6 +154,16 @@
 
 }
 
+.activated {
+    color: white !important;
+    background-color: #5cb85c !important;
+}
+
+.activated:hover {
+    background-color: #449d44 !important;
+    cursor: pointer;
+}
+
 /* css cho item */
 .pageItem {
     display: inline;

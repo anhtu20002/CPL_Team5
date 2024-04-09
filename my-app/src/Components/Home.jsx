@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [articles, setArticles] = useState([]);
@@ -15,6 +16,7 @@ const Home = () => {
   const [toggleTag, setToggleTag] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [isFetchingFromFeed, setIsFetchingFromFeed] = useState(true);
+  const nav = useNavigate();
 
   //set avctive tag
   const [activeItem, setActiveItem] = useState("yourFeed");
@@ -145,6 +147,43 @@ const Home = () => {
     setIsFetchingFromFeed(false);
   };
 
+  const handleFavorite = async (article) => {
+    if (!token) {
+      alert("Please login to favorite articles!");
+      nav("/login");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const method = article.favorited ? "DELETE" : "POST";
+
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${article.slug}/favorite`,
+        {
+          method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to favorite/unfavorite article");
+      }
+
+      const updatedArticleData = await response.json();
+
+      setArticles((prevArticles) =>
+        prevArticles.map((a) =>
+          a.slug === article.slug ? { ...a, ...updatedArticleData.article } : a
+        )
+      );
+    } catch (error) {
+      console.error("Error favoriting/unfavoriting article:", error);
+    }
+  };
+
   return (
     <div>
       <div
@@ -220,7 +259,14 @@ const Home = () => {
                       </div>
                     </div>
                     <div>
-                      <button className="btn btn-sm btn-outline-success pull-xs-right">
+                      <button
+                        onClick={() => handleFavorite(article)}
+                        className={
+                          article.favorited
+                            ? `btn btn-sm pull-xs-right ${styles.activated}`
+                            : "btn btn-sm btn-outline-success pull-xs-right"
+                        }
+                      >
                         <FontAwesomeIcon icon={faHeart} />
                         <span>{article.favoritesCount}</span>
                       </button>
