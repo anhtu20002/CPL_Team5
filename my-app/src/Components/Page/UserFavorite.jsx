@@ -185,9 +185,9 @@ export default function UserFavorite({myProfile}) {
   return (
     <div>
       {isLoadingArticles && isLoadingProfile ? (
-        <div style={{ margin: "auto", width: "1%" }}>
-          <Spinner animation="border" variant="success" />
-        </div>
+        <div style={{ margin: "auto", width: "1%", marginTop:'4rem', paddingRight:'4.0rem' }}>
+        <Spinner style={{width:'56px', height:'56px'}} animation="border" variant="success" />
+      </div>
       ) : (
         <div className="">
           <div className="">

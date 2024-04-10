@@ -31,7 +31,7 @@ export default function Settings({ setAuthStatus }) {
         }
         const data = await response.json();
         setUser({ ...data.user });
-        setPreviousUserData({ ...data.user }); 
+        setPreviousUserData({ ...data.user });
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -43,7 +43,6 @@ export default function Settings({ setAuthStatus }) {
       fetchUserData();
     }
   }, [token, isUpdateSuccess]);
-
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -62,7 +61,6 @@ export default function Settings({ setAuthStatus }) {
     // if (!isValidForm()) {
     //   return;
     // }
-    
 
     try {
       const response = await fetch(`https://api.realworld.io/api/user`, {
@@ -94,8 +92,8 @@ export default function Settings({ setAuthStatus }) {
         setAuthStatus("UNAUTHENTICATED");
         navigate("/login");
       } else {
-        console.log("Other user settings updated successfully!"); // Or display a success message
-        console.log(isEmailChanged)
+        // console.log("Other user settings updated successfully!"); // Or display a success message
+        // console.log(isEmailChanged)
       }
     } catch (error) {
       console.error("Error updating user settings:", error);
@@ -104,7 +102,6 @@ export default function Settings({ setAuthStatus }) {
       // Handle errors gracefully, e.g., display an error message to the user
     }
   };
-
 
   return (
     <div>
@@ -204,17 +201,17 @@ export default function Settings({ setAuthStatus }) {
                     </fieldset>
                   </form>
                 </div>
-                <div>
-                  <button
-                    onClick={handleLogout}
-                    className={`btn ${styles.btn_logout}`}
-                    style={{ float: "left" }}
-                  >
-                    Or click here to logout.
-                  </button>
-                </div>
               </div>
             )}
+            <div>
+              <button
+                onClick={handleLogout}
+                className={`btn ${styles.btn_logout}`}
+                style={{ float: "left" }}
+              >
+                Or click here to logout.
+              </button>
+            </div>
           </div>
         </div>
       </div>

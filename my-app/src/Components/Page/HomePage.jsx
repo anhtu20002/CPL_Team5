@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Container } from "react-bootstrap";
 import { NavLink, Link } from "react-router-dom";
 import styles from "../Header.module.css";
@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faGear } from "@fortawesome/free-solid-svg-icons";
 
 const HomePage = ({myProfile}) => {
-  const token = localStorage.getItem('token');
 
   return (
     <Container className={styles.header}>
