@@ -2,26 +2,105 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHeart,
+  faPlus,
+  faPen,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
 import styles from "../Page/Details.module.css";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
-const Details = () => {
+const Details = ({ myProfile }) => {
   const { slug } = useParams();
   const [article, setArticles] = useState(null);
+  const [follow, setFollow] = useState(false);
+  const nav = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const fetchData = async () => {
-      const response = await fetch(
-        `https://api.realworld.io/api/articles/${slug}`
-      );
+      const response = token
+        ? await fetch(`https://api.realworld.io/api/articles/${slug}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+        : await fetch(`https://api.realworld.io/api/articles/${slug}`);
       const data = await response.json();
       console.log(data);
       setArticles(data.article);
     };
 
     fetchData();
-  }, [slug]);
+  }, [article, follow, slug]);
+
+  const handleFollow = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login to follow users!");
+      nav("/login");
+      return;
+    }
+
+    const method = article.author.following ? "DELETE" : "POST"; // Determine API method based on follow state
+
+    try {
+      const response = await fetch(
+        `https://api.realworld.io/api/profiles/${article.author.username}/follow`,
+        {
+          method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to follow/unfollow user");
+      }
+
+      const updatedFollowStatus = await response.json();
+      setFollow(updatedFollowStatus.profile.following); // Update local follow state
+    } catch (error) {
+      console.error("Error following/unfollowing user:", error);
+    }
+  };
+
+  const handleFavorite = async (article) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login to favorite articles!");
+      nav("/login");
+      return;
+    }
+
+    try {
+      const method = article.favorited ? "DELETE" : "POST";
+
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${article.slug}/favorite`,
+        {
+          method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to favorite/unfavorite article");
+      }
+
+      const updatedArticleData = await response.json();
+
+      setArticles(updatedArticleData.article);
+    } catch (error) {
+      console.error("Error favoriting/unfavoriting article:", error);
+    }
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const options = { month: "long", day: "numeric", year: "numeric" };
@@ -65,7 +144,10 @@ const Details = () => {
       {article ? (
         <div>
           <div className={styles.banner}>
-            <Container style={{ padding: "2rem 0" }}>
+            <Container
+              className="col-9"
+              style={{ padding: "2rem 0", margin: "auto" }}
+            >
               <strong style={{ color: "#ffffff", fontSize: "44.8px" }}>
                 {article.title}
               </strong>
@@ -92,26 +174,65 @@ const Details = () => {
                   </a>
                   <span>{formatDate(article.createdAt)}</span>
                 </div>
-                <button
-                  className={`btn btn-sm action-btn btn-secondary ${styles.button_follow}`}
-                >
-                  <FontAwesomeIcon icon={faPlus} />
-                  <span> Follow</span>
-                  <span> {article.author.username}</span>
-                </button>
-                <button
-                  className={`btn btn-outline-success btn-sm ${styles.button_favorite}`}
-                >
-                  <FontAwesomeIcon icon={faHeart} />
-                  <span> Favorite Article </span>
-                  <span> ({article.favoritesCount})</span>
-                </button>
+                <div>
+                  {article.author.username === myProfile.user?.username ? (
+                    <div>
+                      <button
+                        className={`btn btn-sm action-btn ${styles.button_follow}`}
+                      >
+                        <FontAwesomeIcon icon={faPen} />
+                        <span> Edit Article</span>
+                      </button>
+                      <button
+                        className={`btn btn-outline-danger btn-sm ${styles.button_favorite}`}
+                      >
+                        <FontAwesomeIcon icon={faTrashCan} />
+                        <span> Delete Article </span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <button
+                        onClick={() => handleFollow(article.author.username)}
+                        className={`btn btn-sm action-btn btn-secondary ${styles.button_follow}`}
+                      >
+                        <FontAwesomeIcon icon={faPlus} />
+                        {article.author.following ? (
+                          <span> Unfollow {article.author.username}</span>
+                        ) : (
+                          <span> Follow {article.author.username}</span>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleFavorite(article)}
+                        className={`btn btn-outline-success btn-sm ${styles.button_favorite}`}
+                      >
+                        <FontAwesomeIcon icon={faHeart} />
+                        {article.favorited ? (
+                          <span>
+                            Unfavorite Article ({article.favoritesCount})
+                          </span>
+                        ) : (
+                          <span>
+                            Favorite Article ({article.favoritesCount})
+                          </span>
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </Container>
           </div>
 
           <Container
-            style={{ color: "#373a3c", borderBottom: "1px solid #c5c5c5" }}
+            className="col-9"
+            style={{
+              color: "#373a3c",
+              borderBottom: "1px solid #c5c5c5",
+              margin: "auto",
+              padding: "0",
+            }}
           >
             <p style={{ fontSize: "18px" }}>{article.description}</p>
             <p style={{ fontSize: "18px" }}>{article.body}</p>
@@ -133,28 +254,39 @@ const Details = () => {
       )}
 
       <div className={styles.comment}>
-        <form className="card comment-form">
-          <div className="card-block">
-            <textarea
-              name="comment"
-              placeholder="Write a comment..."
-              className="form-control"
-              rows={3}
-            ></textarea>
-          </div>
-          <div
-            style={{ backgroundColor: "#f5f5f5", color: "#373a3c" }}
-            className="d-flex align-items-center justify-content-between p-3"
-          >
-            <span>avatar</span>
-            <button
-              type="submit"
-              className={`btn btn-outline-success btn-sm ${styles.button_comment}`}
+        {token ? (
+          <form className="card comment-form">
+            <div className="card-block">
+              <textarea
+                name="comment"
+                placeholder="Write a comment..."
+                className="form-control"
+                rows={3}
+              ></textarea>
+            </div>
+            <div
+              style={{ backgroundColor: "#f5f5f5", color: "#373a3c" }}
+              className="d-flex align-items-center justify-content-between p-3"
             >
-              Post Comment
-            </button>
-          </div>
-        </form>
+              <img
+                src={`${myProfile.user?.image}`}
+                alt="avatar"
+                style={{ width: "32px", height: "32px", borderRadius: "100%" }}
+              ></img>
+              <button
+                type="submit"
+                className={`btn btn-outline-success btn-sm ${styles.button_comment}`}
+              >
+                Post Comment
+              </button>
+            </div>
+          </form>
+        ) : (
+          <p>
+            <a href="/login">Sign in</a> or <a href="/register">Sign up</a> to
+            add comments on this articles
+          </p>
+        )}
       </div>
     </div>
   );
