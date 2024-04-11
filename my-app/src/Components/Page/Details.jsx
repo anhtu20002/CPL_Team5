@@ -15,6 +15,8 @@ const Details = ({ myProfile }) => {
   const { slug } = useParams();
   const [article, setArticles] = useState(null);
   const [follow, setFollow] = useState(false);
+  // console.log(myProfile.user.username);
+
   const nav = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -29,7 +31,7 @@ const Details = ({ myProfile }) => {
           })
         : await fetch(`https://api.realworld.io/api/articles/${slug}`);
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       setArticles(data.article);
     };
 
@@ -138,6 +140,38 @@ const Details = ({ myProfile }) => {
     addComment(newComment);
     setNewComment("");
   };
+  const handleDelete = async () => {
+    try {
+      // Gửi yêu cầu DELETE đến API
+      const response = await fetch(
+        `https://api.realworld.io/api/articles/${slug}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Kiểm tra xem yêu cầu xóa đã thành công hay không
+      if (response.ok) {
+        console.log("Article deleted successfully");
+        nav(`/profile/${encodeURIComponent(myProfile.user?.username)}`);
+        // Thực hiện các hành động cần thiết sau khi xóa bài viết, ví dụ: cập nhật trạng thái của ứng dụng, điều hướng người dùng, vv.
+      } else {
+        console.error("Error deleting article:", response.status);
+        // Xử lý lỗi nếu có
+      }
+    } catch (error) {
+      console.error("Error deleting article:", error);
+      // Xử lý lỗi nếu có
+    }
+  };
+  const handleEdit = () => {
+    // console.log("ok");
+    nav(`/editor/${slug}`);
+  }
 
   return (
     <div className={styles.article_page}>
@@ -179,12 +213,14 @@ const Details = ({ myProfile }) => {
                     <div>
                       <button
                         className={`btn btn-sm action-btn ${styles.button_follow}`}
+                        onClick={(e) => handleEdit(e)}
                       >
                         <FontAwesomeIcon icon={faPen} />
                         <span> Edit Article</span>
                       </button>
                       <button
                         className={`btn btn-outline-danger btn-sm ${styles.button_favorite}`}
+                        onClick={(e) => handleDelete(e)}
                       >
                         <FontAwesomeIcon icon={faTrashCan} />
                         <span> Delete Article </span>

@@ -55,6 +55,7 @@ const App = () => {
         />
         <Route path="/register" element={<Signup setAuthStatus={setAuthStatus}/>} />
         <Route path="/editor" element={<Article />} />
+        <Route path="/editor/:slug" element={<Article />} />
         <Route
           path="/settings"
           element={<Settings setAuthStatus={setAuthStatus} />}

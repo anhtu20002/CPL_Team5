@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 export default function Article() {
   const token = localStorage.getItem("token");
   const SERVER_API = "https://api.realworld.io/api";
+  const { slug } = useParams();
+  const nav = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -11,8 +15,42 @@ export default function Article() {
     tags: "",
   });
 
-  // const [errorMessage, setErrorMessage] = useState("");
-  // const [successMessage, setSuccessMessage] = useState("");
+  // Trạng thái xác định hành động là thêm mới hay chỉnh sửa
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${SERVER_API}/articles/${slug}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch article");
+        }
+
+        const data = await response.json();
+
+        // Đặt thông tin của bài viết vào state formData để điền vào form khi chỉnh sửa
+        setFormData({
+          title: data.article.title,
+          content: data.article.body,
+          about: data.article.description,
+          tags: data.article.tagList.join(", "),
+        });
+      } catch (error) {
+        console.error("Error fetching article:", error);
+      }
+    };
+
+    // Nếu có slug được truyền vào, đặt trạng thái là chỉnh sửa
+    if (slug) {
+      setIsEditing(true);
+      fetchData();
+    }
+  }, [slug, token]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -21,54 +59,69 @@ export default function Article() {
       [name]: value,
     });
   };
-  // console.log(formData);
-  const postwithToken = async (url, token, data) => {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    });
-    // console.log(JSON.stringify(data));
-    // console.log("Data: ",data);
-    return response.json();
-  };
 
-  // Handler khi người dùng ấn nút đăng nhập
-  const handleSubmit = async  (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      // Gọi API đăng nhập sử dụng phương thức postwithToken
-     const response = await postwithToken(`${SERVER_API}/articles`, token, {
-       article: {
-         title: formData.title,
-         description: formData.about,
-         body: formData.content,
-         tagList: [formData.tags],
-       },
-     });
-    //  console.log(response.data);
-     if (response.article) {
-      //  console.log("Đăng bài thành công!", response.article.title);
+      let response;
+      if (isEditing) {
+        // Nếu đang chỉnh sửa, gửi yêu cầu cập nhật bài viết đã tồn tại
+        response = await fetch(`${SERVER_API}/articles/${slug}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            article: {
+              title: formData.title,
+              description: formData.about,
+              body: formData.content,
+              tagList: formData.tags.split(",").map((tag) => tag.trim()),
+            },
+          }),
+        });
+      } else {
+        // Nếu không phải chỉnh sửa, gửi yêu cầu tạo bài viết mới
+        response = await fetch(`${SERVER_API}/articles`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            article: {
+              title: formData.title,
+              description: formData.about,
+              body: formData.content,
+              tagList: formData.tags.split(",").map((tag) => tag.trim()),
+            },
+          }),
+        });
+      }
 
-       // Thực hiện các thao tác tiếp theo sau khi đăng bài thành công
-     } else {
-      //  console.error("Không có thông tin bài viết trả về từ máy chủ.");
-      //  console.log(response.errors.title);
-      toast("Article " + response.errors.title[0]);
-     }
-      // Xử lý khi đăng nhập thành công
+      if (!response.ok) {
+        throw new Error("Failed to submit article");
+      }
+
+      toast.success(
+        isEditing
+          ? "Article updated successfully"
+          : "Article created successfully"
+      );
+      nav(`/article/${slug}`);
     } catch (error) {
-      // Xử lý khi đăng nhập thất bại
-      console.log(error);
+      console.error("Error submitting article:", error);
+      toast.error("Failed to submit article");
     }
   };
 
- 
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
   return (
-    <div className="container col-8 mt-5" style={{textAlign:"center"}}>
+    <div className="container col-8 mt-5" style={{ textAlign: "center" }}>
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <div className="mb-3">
           <input
@@ -118,26 +171,20 @@ export default function Article() {
             required
           />
         </div>
-        {/* {errorMessage && (
-          <div className="alert alert-danger">{errorMessage}</div>
-        )}
-        {successMessage && (
-          <div className="alert alert-success">{successMessage}</div>
-        )} */}
         <button
           type="submit"
           style={{
             backgroundColor: "#5CB85C",
             color: "white",
             border: "none",
-            fontSize:"18px",
+            fontSize: "18px",
             padding: "10px 25px",
             marginTop: "10px",
             borderRadius: "5px",
-            float:'right'
+            float: "right",
           }}
         >
-          Publish Article
+          {isEditing ? "Update Article" : "Publish Article"}
         </button>
       </form>
     </div>
