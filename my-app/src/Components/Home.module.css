@@ -1,6 +1,5 @@
 .feed_toggle {
 
-
     li {
         padding: 10px 10px;
         cursor: pointer;
@@ -8,52 +7,65 @@
         font-size: 18px;
         margin-right: 20px;
     }
+
+    li:hover {
+        color: #4d4d4d;
+    }
+}
+
+.loadingContainer {
+    position: fixed;
+    top: 52%;
+    left: 35%;
 }
 
 .title {
-    border-top: 1px solid #c8c8c8;
+    border-top: 2px solid #e5e5e5;
+
     .author_info {
         margin-top: 15px;
-    
+
         div {
             align-items: center;
-    
+
             a img {
                 border-radius: 100%;
             }
-    
+
             div {
                 margin-left: 5px;
                 flex-direction: column;
-    
+
                 a {
                     color: #5cb85c;
                     text-decoration: none;
                 }
-    
+
                 a:hover {
                     color: #428e42;
                     text-decoration: underline;
                 }
-    
+
                 span {
-                    font-size: 12px;
+                    color: #bbbbbb;
+                    box-sizing: inherit;
+                    font-size: .85rem;
                     display: block;
                 }
             }
         }
-    
+
         div {
             button {
                 font-size: 14px;
                 color: #5cb85c;
                 padding: 4px 8px;
-    
+
                 span {
                     margin-left: 4px;
                 }
             }
-    
+
             button:active,
             button:hover {
                 color: white;
@@ -68,6 +80,7 @@
 
     a {
         text-decoration: none;
+
         h3 {
             color: #373a3c;
             font-size: 22px;
