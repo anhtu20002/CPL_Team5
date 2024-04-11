@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import Header from "./Header";
-// import { SERVER_API } from "../Utils/config.js";
 import { Col, Container, Row } from "react-bootstrap";
 import styles from "./Home.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,6 +6,7 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import ReactLoading from "react-loading";
 
 const Home = () => {
   const [articles, setArticles] = useState([]);
@@ -16,10 +15,15 @@ const Home = () => {
   const [toggleTag, setToggleTag] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [isFetchingFromFeed, setIsFetchingFromFeed] = useState(true);
+  const [isLoadingArticles, setIsLoadingArticles] = useState(true);
+  const [isLoadingTags, setIsLoadingTags] = useState(true);
+  const [isLoadingArticleWithPage, setIsLoadingArticleWithPage] =
+    useState(true);
+
   const nav = useNavigate();
 
-  //set avctive tag
-  const [activeItem, setActiveItem] = useState("yourFeed");
+  //set active tag
+  const [activeItem, setActiveItem] = useState("globalFeed");
   const [activeTag, setActiveTag] = useState("");
   const token = localStorage.getItem("token");
 
@@ -28,28 +32,28 @@ const Home = () => {
       if (!isFetchingFromFeed) {
         getArticles(fillTag, 0, token);
       } else {
+        setActiveItem("yourFeed");
         getArticlesFromFeed(0, token); // New function to fetch from feed
       }
     } else {
       getArticles(fillTag, 0, false);
-      console.log(fillTag);
     }
-  }, [fillTag, isFetchingFromFeed, token]);
+  }, [fillTag, isFetchingFromFeed, token, toggleTag]);
 
   // lấy articles theo offset, filltag
   const getArticles = async (fillTag, offset, token) => {
+    setIsLoadingArticles(true); // Bắt đầu quá trình tải dữ liệu
     let res = await fetchArticles(fillTag, offset, token);
     let data = await res.json();
 
-    console.log("Check fetch");
     console.log(data.articles);
     setArticles(data.articles);
     setTotalPages(Math.ceil(data.articlesCount / 10));
+    setIsLoadingArticles(false); // Kết thúc quá trình tải dữ liệu
   };
 
   // truyền offset vào api
   const fetchArticles = (fillTag, offset, token) => {
-    console.log(token);
     if (fillTag.trim().length > 0) {
       return fetch(
         `https://api.realworld.io/api/articles?tag=${fillTag}&offset=${offset}`
@@ -65,13 +69,16 @@ const Home = () => {
   };
 
   const getArticlesFromFeed = async (offset, token) => {
+    setIsLoadingArticles(true); // Bắt đầu quá trình tải dữ liệu
     let res = await fetchArticlesFromFeed(offset, token);
     let data = await res.json();
 
     console.log(data.articles);
     setArticles(data.articles);
     setTotalPages(Math.ceil(data.articlesCount / 10));
+    setIsLoadingArticles(false); // Kết thúc quá trình tải dữ liệu
   };
+
   const fetchArticlesFromFeed = (offset, token) => {
     return fetch(
       `https://api.realworld.io/api/articles/feed?offset=${offset}`,
@@ -85,14 +92,17 @@ const Home = () => {
 
   // fetch Tags
   useEffect(() => {
+    setIsLoadingTags(true); // Bắt đầu quá trình tải dữ liệu
     fetch("https://api.realworld.io/api/tags")
       .then((res) => res.json())
       .then((data) => {
         console.log(data.tags);
         setTags(data.tags);
+        setIsLoadingTags(false); // Kết thúc quá trình tải dữ liệu
       })
       .catch((err) => {
         console.log(err.message);
+        setIsLoadingTags(false); // Kết thúc quá trình tải dữ liệu
       });
   }, []);
 
@@ -109,7 +119,6 @@ const Home = () => {
     if (token) {
       if (!isFetchingFromFeed) {
         getArticles(fillTag, event.selected * 10, token);
-        console.log("check");
       } else {
         getArticlesFromFeed(event.selected * 10, token); // New function to fetch from feed
       }
@@ -124,8 +133,10 @@ const Home = () => {
     console.log("Clicked tag:", tag);
     setFillTag(tag);
     setToggleTag(tag);
+    setIsFetchingFromFeed(false);
     setActiveItem(tag);
     setActiveTag(tag);
+    console.log(activeItem, toggleTag);
   };
 
   //toggle your feed
@@ -200,7 +211,6 @@ const Home = () => {
           A place to share your knowledge.
         </p>
       </div>
-
       <Container className="mt-4">
         <Row>
           <Col md={9}>
@@ -227,112 +237,135 @@ const Home = () => {
                 )}
               </ul>
             </div>
-            {articles.map((article, index) => {
-              return (
-                <div key={index} className={styles.title}>
-                  <div
-                    className={`${styles.author_info} d-flex justify-content-between`}
-                  >
-                    <div className="d-flex ">
-                      <a
-                        href={
-                          `/profile/` +
-                          encodeURIComponent(article.author.username)
-                        }
-                      >
-                        <img
-                          style={{ width: "32px", height: "32px" }}
-                          src={article.author.image}
-                          alt=""
-                        />
-                      </a>
-                      <div>
-                        <a
-                          href={
-                            `/profile/` +
-                            encodeURIComponent(article.author.username)
-                          }
-                        >
-                          {article.author.username}
-                        </a>
-                        <span>{formatDate(article.createdAt)}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <button
-                        onClick={() => handleFavorite(article)}
-                        className={
-                          article.favorited
-                            ? `btn btn-sm pull-xs-right ${styles.activated}`
-                            : "btn btn-sm btn-outline-success pull-xs-right"
-                        }
-                      >
-                        <FontAwesomeIcon icon={faHeart} />
-                        <span>{article.favoritesCount}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className={styles.article_info}>
-                    <Link to={`/article/${article.slug}`}>
-                      <h3>{article.title}</h3>
-                      <p>{article.description}</p>
-                      <div>
-                        <span>Read more...</span>
-                        <ul className="tag-list">
-                          {article.tagList.map((tag) => {
-                            return (
-                              <li
-                                className="tag-default tag-pill tag-outline"
-                                key={tag}
-                              >
-                                {tag}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-            <ReactPaginate
-              nextLabel=">"
-              previousLabel="<"
-              pageCount={totalPages}
-              marginPagesDisplayed={0}
-              pageRangeDisplayed={totalPages}
-              onPageChange={handlePageClick}
-              pageClassName={styles.pageItem}
-              pageLinkClassName={styles.pageLink}
-              containerClassName="pagination d-flex flex-wrap"
-              previousClassName={styles.previous}
-              previousLinkClassName={styles.pageLink}
-              nextClassName={styles.next}
-              nextLinkClassName={styles.pageLink}
-              activeClassName={styles.active}
-            />
-          </Col>
-          <Col md={3} className={styles.sidebar}>
-            <div>
-              <span>Popular Tags</span>
-              <div className={styles.tag_list}>
-                {tags.map((tag, index) => {
+            {isLoadingArticles ? (
+              <div className="text-center">
+                <ReactLoading
+                  className={styles.loadingContainer}
+                  type={"spinningBubbles"}
+                  color={"black"}
+                  height={30}
+                  width={30}
+                />
+                <p>Loading Articles...</p>
+              </div>
+            ) : (
+              <div>
+                {articles.map((article, index) => {
                   return (
-                    <a
-                      className={
-                        activeTag === tag ? styles.activeTag : styles.tag
-                      }
-                      href
-                      onClick={(event) => handleClickTags(event, tag)}
-                    >
-                      {tag}
-                    </a>
+                    <div key={index} className={styles.title}>
+                      <div
+                        className={`${styles.author_info} d-flex justify-content-between`}
+                      >
+                        <div className="d-flex ">
+                          <a
+                            href={
+                              `/profile/` +
+                              encodeURIComponent(article.author.username)
+                            }
+                          >
+                            <img
+                              style={{ width: "32px", height: "32px" }}
+                              src={article.author.image}
+                              alt=""
+                            />
+                          </a>
+                          <div>
+                            <a
+                              href={
+                                `/profile/` +
+                                encodeURIComponent(article.author.username)
+                              }
+                            >
+                              {article.author.username}
+                            </a>
+                            <span>{formatDate(article.createdAt)}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <button
+                            onClick={() => handleFavorite(article)}
+                            className={
+                              article.favorited
+                                ? `btn btn-sm pull-xs-right ${styles.activated}`
+                                : "btn btn-sm btn-outline-success pull-xs-right"
+                            }
+                          >
+                            <FontAwesomeIcon icon={faHeart} />
+                            <span>{article.favoritesCount}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className={styles.article_info}>
+                        <Link to={`/article/${article.slug}`}>
+                          <h3>{article.title}</h3>
+                          <p>{article.description}</p>
+                          <div>
+                            <span>Read more...</span>
+                            <ul className="tag-list">
+                              {article.tagList.map((tag) => {
+                                return (
+                                  <li
+                                    className="tag-default tag-pill tag-outline"
+                                    key={tag}
+                                  >
+                                    {tag}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        </Link>
+                      </div>
+                    </div>
                   );
                 })}
+                {totalPages > 0 ? (
+                  <ReactPaginate
+                    nextLabel=">"
+                    previousLabel="<"
+                    pageCount={totalPages}
+                    marginPagesDisplayed={0}
+                    pageRangeDisplayed={totalPages}
+                    onPageChange={handlePageClick}
+                    pageClassName={styles.pageItem}
+                    pageLinkClassName={styles.pageLink}
+                    containerClassName="pagination d-flex flex-wrap"
+                    previousClassName={styles.previous}
+                    previousLinkClassName={styles.pageLink}
+                    nextClassName={styles.next}
+                    nextLinkClassName={styles.pageLink}
+                    activeClassName={styles.active}
+                  />
+                ) : null}
               </div>
-            </div>
+            )}
+          </Col>
+          <Col md={3} className={styles.sidebar}>
+            {isLoadingTags ? (
+              <div>
+                <span>Loading Tags...</span>
+              </div>
+            ) : (
+              <div>
+                <span>Popular Tags</span>
+                <div className={styles.tag_list}>
+                  {tags.map((tag, index) => {
+                    return (
+                      <a
+                        className={
+                          activeTag === tag ? styles.activeTag : styles.tag
+                        }
+                        href
+                        onClick={(event) => handleClickTags(event, tag)}
+                      >
+                        {tag}
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </Col>
         </Row>
       </Container>
