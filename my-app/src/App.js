@@ -12,6 +12,7 @@ import UserProfile from "./Components/Page/UserProfile";
 import UserFavorite from "./Components/Page/UserFavorite";
 import Details from "./Components/Page/Details";
 import Footer from "./Components/Footer";
+import NotFound from "./Components/NotFound";
 // import  {ToastContainer } from  
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -43,9 +44,14 @@ const App = () => {
     fetchData();
   }, [myProfile]);
 
+  const isNotFound = () => {
+    const dynamicPathsRegex = /^\/$|\/article\/[a-zA-Z0-9-_]+|\/profile\/[a-zA-Z0-9-_]+\/favorites|\/profile\/[a-zA-Z0-9-_]+|\/login|\/editor|\/register|\/settings/;
+    return !dynamicPathsRegex.test(window.location.pathname);
+  };
+
   return (
     <div className="App">
-      {authStatus === "AUTHENTICATED" ? <HomePage myProfile={myProfile}/> : <Header />}
+      {isNotFound() ? null : (authStatus === "AUTHENTICATED" ? <HomePage myProfile={myProfile}/> : <Header />)}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/article/:slug" element={<Details myProfile={myProfile}/>}/>
@@ -62,8 +68,9 @@ const App = () => {
         />
         <Route path="/profile/:username" element={<UserProfile myProfile={myProfile}/>} />
         <Route path="/profile/:username/favorites" element={<UserFavorite myProfile={myProfile} />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
-      <Footer />
+      {isNotFound() ? null : <Footer />}
       <ToastContainer/>
     </div>
   );

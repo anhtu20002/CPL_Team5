@@ -16,8 +16,9 @@ export default function Settings({ setAuthStatus }) {
     bio: "",
     image: "",
   });
-  const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
+  const token = localStorage.getItem("token"); 
 
+  //get user data
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -55,12 +56,7 @@ export default function Settings({ setAuthStatus }) {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
-
-    // Implement form validation (optional)
-    // if (!isValidForm()) {
-    //   return;
-    // }
+    event.preventDefault(); 
 
     try {
       const response = await fetch(`https://api.realworld.io/api/user`, {
@@ -91,15 +87,12 @@ export default function Settings({ setAuthStatus }) {
         localStorage.removeItem("token");
         setAuthStatus("UNAUTHENTICATED");
         navigate("/login");
-      } else {
-        // console.log("Other user settings updated successfully!"); // Or display a success message
-        // console.log(isEmailChanged)
-      }
+      } 
+      
     } catch (error) {
       console.error("Error updating user settings:", error);
       toast.error("Email or Username already exists");
       setIsUpdateSuccess(false);
-      // Handle errors gracefully, e.g., display an error message to the user
     }
   };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faPlus, faGear } from "@fortawesome/free-solid-svg-icons";
 import { useParams, NavLink } from "react-router-dom";
@@ -12,6 +12,7 @@ export default function UserFavorite({myProfile}) {
   const [user, setUser] = useState([]);
   const [follow, setFollow] = useState(false);
   const nav = useNavigate();
+  const location = useLocation();
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isLoadingArticles, setIsLoadingArticles] = useState(true);
   const [isLoadingPagination, setIsLoadingPagination] = useState(false);
@@ -19,6 +20,8 @@ export default function UserFavorite({myProfile}) {
   const [currentPage, setCurrentPage] = useState(0); // Page number (0-based)
   const [itemsPerPage, setItemsPerPage] = useState(5); // Articles per page
   const [totalPages, setTotalPages] = useState(0);
+  const [isReturningFromArticleDetail, setIsReturningFromArticleDetail] =
+    useState(false);
   const token = localStorage.getItem("token");
 
   const formatDate = (dateString) => {
@@ -63,6 +66,7 @@ export default function UserFavorite({myProfile}) {
     }
   };
 
+  // get user data
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -94,6 +98,7 @@ export default function UserFavorite({myProfile}) {
     fetchUserProfile();
   }, [username, follow]);
 
+  //get articles data
   useEffect(() => {
     const fetchArticles = async () => {
       const token = localStorage.getItem("token");
@@ -117,10 +122,11 @@ export default function UserFavorite({myProfile}) {
         }
         const data = await response.json();
         setArticles(data.articles);
-        if (currentPage === 0 && data.articles.length === itemsPerPage) {
+        if (currentPage === 0 && data.articles.length === itemsPerPage ||
+          isReturningFromArticleDetail ) {
           setTotalPages(
             Math.ceil((data.articlesCount || articles.length) / itemsPerPage)
-          ); // Use articles.length if articlesCount is unavailable
+          ); 
         }
         setIsLoadingArticles(false);
         setIsLoadingPagination(false);
@@ -130,7 +136,7 @@ export default function UserFavorite({myProfile}) {
     };
 
     fetchArticles();
-  }, [username, currentPage, itemsPerPage]);
+  }, [username, currentPage, itemsPerPage, isReturningFromArticleDetail]);
 
   const handlePageClick = (data) => {
     setCurrentPage(data.selected);
@@ -182,6 +188,18 @@ export default function UserFavorite({myProfile}) {
     }
   };
 
+  const handleArticleClick = (article) =>{
+    nav(`/article/${article.slug}`, { isReturningFromArticleDetail: true });
+  }
+
+  useEffect(() => {
+    if (location.state && location.state.isReturningFromArticleDetail) {
+      setIsReturningFromArticleDetail(true);
+    } else {
+      setIsReturningFromArticleDetail(false); // Reset the state when not returning from article detail
+    }
+  }, [location.state]);
+
   return (
     <div>
       {isLoadingArticles && isLoadingProfile ? (
@@ -220,7 +238,7 @@ export default function UserFavorite({myProfile}) {
                     {user.profile?.following
                       ? ` Unfollow ${user.profile?.username}`
                       : ` Follow ${user.profile?.username}`}
-                  </button> // Other user's profile - display "Follow" or "Unfollow"
+                  </button>
                 )}
               </div>
             </div>
@@ -303,7 +321,7 @@ export default function UserFavorite({myProfile}) {
                       </div>
 
                       <div className={styles.article_preview}>
-                        <a href={`/article/`+ article.slug} style={{ textDecoration: "none" }}>
+                        <a href onClick={() =>handleArticleClick(article)} style={{ textDecoration: "none" }}>
                           <h3>{article.title}</h3>
                           <p>{article.description}</p>
                           <div>

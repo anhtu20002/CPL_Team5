@@ -7,7 +7,7 @@ import ReactPaginate from "react-paginate";
 import styles from "./UserProfile.module.css";
 import Spinner from "react-bootstrap/Spinner";
 
-export default function UserProfile({myProfile}) {
+export default function UserProfile({ myProfile }) {
   const [articles, setArticles] = useState([]);
   const [user, setUser] = useState([]);
   const [follow, setFollow] = useState(false);
@@ -63,6 +63,7 @@ export default function UserProfile({myProfile}) {
     }
   };
 
+  // get user data
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -86,6 +87,7 @@ export default function UserProfile({myProfile}) {
         if (!response.ok) {
           throw new Error("Failed to fetch user profile");
         }
+
         const userData = await response.json();
         setUser(userData);
         setIsLoadingProfile(false);
@@ -97,6 +99,7 @@ export default function UserProfile({myProfile}) {
     fetchUserProfile();
   }, [username, follow]);
 
+  // get articles data
   useEffect(() => {
     const fetchArticles = async () => {
       const offset = currentPage * itemsPerPage;
@@ -118,15 +121,17 @@ export default function UserProfile({myProfile}) {
                 username
               )}&limit=${itemsPerPage}&offset=${offset}`
             );
+
         if (!response.ok) {
           throw new Error("Failed to fetch articles");
         }
+
         const data = await response.json();
         setArticles(data.articles);
         if (currentPage === 0 && data.articles.length === itemsPerPage) {
           setTotalPages(
             Math.ceil((data.articlesCount || articles.length) / itemsPerPage)
-          ); // Use articles.length if articlesCount is unavailable
+          );
         }
         setIsLoadingArticles(false);
         setIsLoadingPagination(false);
@@ -136,7 +141,7 @@ export default function UserProfile({myProfile}) {
     };
 
     fetchArticles();
-  }, [username, currentPage, itemsPerPage]);
+  }, [username, currentPage, itemsPerPage, articles]);
 
   const handlePageClick = (data) => {
     setCurrentPage(data.selected);
@@ -183,8 +188,19 @@ export default function UserProfile({myProfile}) {
   return (
     <div className="">
       {isLoadingArticles && isLoadingProfile ? (
-        <div style={{ margin: "auto", width: "1%", marginTop:'4rem', paddingRight:'4.0rem' }}>
-          <Spinner style={{width:'56px', height:'56px'}} animation="border" variant="success" />
+        <div
+          style={{
+            margin: "auto",
+            width: "1%",
+            marginTop: "4rem",
+            paddingRight: "4.0rem",
+          }}
+        >
+          <Spinner
+            style={{ width: "56px", height: "56px" }}
+            animation="border"
+            variant="success"
+          />
         </div>
       ) : (
         <div className="">
@@ -218,7 +234,7 @@ export default function UserProfile({myProfile}) {
                     {user.profile?.following
                       ? ` Unfollow ${user.profile?.username}`
                       : ` Follow ${user.profile?.username}`}
-                  </button> // Other user's profile - display "Follow" or "Unfollow"
+                  </button> 
                 )}
               </div>
             </div>
@@ -293,7 +309,10 @@ export default function UserProfile({myProfile}) {
                     </div>
 
                     <div className={styles.article_preview}>
-                      <a href={`/article/`+ article.slug} style={{ textDecoration: "none" }}>
+                      <a
+                        href={`/article/` + article.slug}
+                        style={{ textDecoration: "none" }}
+                      >
                         <h3>{article.title}</h3>
                         <p>{article.description}</p>
                         <div>
@@ -321,7 +340,7 @@ export default function UserProfile({myProfile}) {
                 <Spinner animation="border" variant="success" />
               </div>
             ) : (
-              <p>No articles found.</p>
+              <p className="mt-3 text-center">No articles found.</p>
             )}
             <div>
               {totalPages > 0 && (
