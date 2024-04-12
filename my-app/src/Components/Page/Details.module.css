@@ -37,33 +37,136 @@
             }
         }
 
-        .button_follow {
-            margin-left: 15px;
-            opacity: .8;
-            font-size: .875rem;
-            color: #373a3c;
-            background-color: #e6e6e6;
-            border-color: #adadad;
-        }
+        /* button */
+        .group_button {
+            div {
+                margin-left: 20px;
 
-        .button_follow:hover {
-            font-size: .875rem;
-            color: #373a3c;
-            background-color: #fff;
-            border-color: #ccc;
-        }
+                .button_editArticle {
+                    background-color: transparent;
+                    border-color: #ccc;
 
-        .button_favorite {
-            font-size: .875rem;
-            margin-left: 5px;
-            color: #5cb85c;
-            background-color: transparent;
-            border-color: #5cb85c;
-        }
+                    span {
+                        color: #ccc;
+                        display: flex;
+                        align-items: center;
+                        font-size: .875rem;
+                    }
+                }
 
-        .button_favorite:hover {
-            color: #fff;
-            background-color: #5cb85c;
+                .button_editArticle:hover {
+                    background-color: hsl(0, 0%, 80%);
+
+                    span {
+                        color: #fff;
+                    }
+                }
+
+                .button_delArticle {
+                    margin-left: 5px;
+                    background-color: transparent;
+                    border-color: #b85c5c;
+
+                    span {
+                        color: #b85c5c;
+                        display: flex;
+                        align-items: center;
+                        font-size: .875rem;
+                    }
+                }
+
+                .button_delArticle:hover {
+                    background-color: #b85c5c;
+
+                    span {
+                        color: #fff;
+                    }
+                }
+            }
+
+            div {
+                .button_follow {
+                    margin-left: 15px;
+                    margin-right: 5px;
+                    background-color: transparent;
+                    border-color: #ccc;
+
+                    span {
+                        color: #ccc;
+                        display: flex;
+                        align-items: center;
+                        font-size: .875rem;
+                    }
+                }
+
+                .button_follow:hover {
+                    font-size: .875rem;
+                    background-color: #cccccc;
+                    border-color: #ccc;
+
+                    span {
+                        color: hsl(0, 0%, 100%);
+                    }
+                }
+
+                .button_unfollow {
+                    margin-left: 15px;
+                    margin-right: 5px;
+                    background-color: #ccc;
+                    border-color: #ccc;
+
+                    span {
+                        color: #373a3c;
+                        display: flex;
+                        align-items: center;
+                        font-size: .875rem;
+                    }
+                }
+
+                .button_unfollow:hover {
+                    background-color: #fff;
+                }
+
+                .button_favorite {
+                    background-color: transparent;
+                    border-color: #5cb85c;
+
+                    span {
+                        color: #5cb85c;
+                        display: flex;
+                        align-items: center;
+                        font-size: .875rem;
+                    }
+                }
+
+                .button_favorite:hover {
+                    background-color: #5cb85c;
+
+                    span {
+                        color: #fff;
+                    }
+                }
+
+                .button_unfavorite {
+                    background-color: #5cb85c;
+                    border-color: #5cb85c;
+
+                    span {
+                        color: #e2e2e2;
+                        display: flex;
+                        align-items: center;
+                        font-size: .875rem;
+                    }
+                }
+                
+                .button_unfavorite:hover {
+                    background-color: #48a048;
+
+                    span {
+                        color: #fff;
+                    }
+                }
+            }
         }
     }
 }
@@ -101,5 +204,22 @@
     .button_comment:hover {
         background-color: #449d44;
         border-color: #419641;
+    }
+    .author {
+        .author_name {
+            color: #5cb85c;
+            text-decoration: none;
+            &:hover {
+                color: #449d44;
+                text-decoration: underline;
+            }
+        }
+    }
+    .button_delComment{
+        color: #bebcbc;
+        cursor: pointer;
+    }
+    .button_delComment:hover{
+        color: black;
     }
 }

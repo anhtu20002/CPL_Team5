@@ -250,94 +250,102 @@ const Home = () => {
               </div>
             ) : (
               <div>
-                {articles.map((article, index) => {
-                  return (
-                    <div key={index} className={styles.title}>
-                      <div
-                        className={`${styles.author_info} d-flex justify-content-between`}
-                      >
-                        <div className="d-flex ">
-                          <a
-                            href={
-                              `/profile/` +
-                              encodeURIComponent(article.author.username)
-                            }
+                {articles.length === 0 ? (
+                  <div style={{margin: '0 auto', alignItems: 'center', display: 'flex'}}>
+                    <span>No articles are here... yet.</span>
+                  </div>
+                ) : (
+                  <>
+                    {articles.map((article, index) => {
+                      return (
+                        <div key={index} className={styles.title}>
+                          <div
+                            className={`${styles.author_info} d-flex justify-content-between`}
                           >
-                            <img
-                              style={{ width: "32px", height: "32px" }}
-                              src={article.author.image}
-                              alt=""
-                            />
-                          </a>
-                          <div>
-                            <a
-                              href={
-                                `/profile/` +
-                                encodeURIComponent(article.author.username)
-                              }
-                            >
-                              {article.author.username}
-                            </a>
-                            <span>{formatDate(article.createdAt)}</span>
+                            <div className="d-flex ">
+                              <a
+                                href={
+                                  `/profile/` +
+                                  encodeURIComponent(article.author.username)
+                                }
+                              >
+                                <img
+                                  style={{ width: "32px", height: "32px" }}
+                                  src={article.author.image}
+                                  alt=""
+                                />
+                              </a>
+                              <div>
+                                <a
+                                  href={
+                                    `/profile/` +
+                                    encodeURIComponent(article.author.username)
+                                  }
+                                >
+                                  {article.author.username}
+                                </a>
+                                <span>{formatDate(article.createdAt)}</span>
+                              </div>
+                            </div>
+                            <div>
+                              <button
+                                onClick={() => handleFavorite(article)}
+                                className={
+                                  article.favorited
+                                    ? `btn btn-sm pull-xs-right ${styles.activated}`
+                                    : "btn btn-sm btn-outline-success pull-xs-right"
+                                }
+                              >
+                                <FontAwesomeIcon icon={faHeart} />
+                                <span>{article.favoritesCount}</span>
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                        <div>
-                          <button
-                            onClick={() => handleFavorite(article)}
-                            className={
-                              article.favorited
-                                ? `btn btn-sm pull-xs-right ${styles.activated}`
-                                : "btn btn-sm btn-outline-success pull-xs-right"
-                            }
-                          >
-                            <FontAwesomeIcon icon={faHeart} />
-                            <span>{article.favoritesCount}</span>
-                          </button>
-                        </div>
-                      </div>
 
-                      <div className={styles.article_info}>
-                        <Link to={`/article/${article.slug}`}>
-                          <h3>{article.title}</h3>
-                          <p>{article.description}</p>
-                          <div>
-                            <span>Read more...</span>
-                            <ul className="tag-list">
-                              {article.tagList.map((tag) => {
-                                return (
-                                  <li
-                                    className="tag-default tag-pill tag-outline"
-                                    key={tag}
-                                  >
-                                    {tag}
-                                  </li>
-                                );
-                              })}
-                            </ul>
+                          <div className={styles.article_info}>
+                            <Link to={`/article/${article.slug}`}>
+                              <h3>{article.title}</h3>
+                              <p>{article.description}</p>
+                              <div>
+                                <span>Read more...</span>
+                                <ul className="tag-list">
+                                  {article.tagList.map((tag) => {
+                                    return (
+                                      <li
+                                        className="tag-default tag-pill tag-outline"
+                                        key={tag}
+                                      >
+                                        {tag}
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              </div>
+                            </Link>
                           </div>
-                        </Link>
-                      </div>
-                    </div>
-                  );
-                })}
-                {totalPages > 0 ? (
-                  <ReactPaginate
-                    nextLabel=">"
-                    previousLabel="<"
-                    pageCount={totalPages}
-                    marginPagesDisplayed={0}
-                    pageRangeDisplayed={totalPages}
-                    onPageChange={handlePageClick}
-                    pageClassName={styles.pageItem}
-                    pageLinkClassName={styles.pageLink}
-                    containerClassName="pagination d-flex flex-wrap"
-                    previousClassName={styles.previous}
-                    previousLinkClassName={styles.pageLink}
-                    nextClassName={styles.next}
-                    nextLinkClassName={styles.pageLink}
-                    activeClassName={styles.active}
-                  />
-                ) : null}
+                        </div>
+                      );
+                    })}
+                    {totalPages > 0 ? (
+                      <ReactPaginate
+                        nextLabel=">"
+                        previousLabel="<"
+                        pageCount={totalPages}
+                        marginPagesDisplayed={0}
+                        pageRangeDisplayed={totalPages}
+                        onPageChange={handlePageClick}
+                        pageClassName={styles.pageItem}
+                        pageLinkClassName={styles.pageLink}
+                        containerClassName="pagination d-flex flex-wrap"
+                        previousClassName={styles.previous}
+                        previousLinkClassName={styles.pageLink}
+                        nextClassName={styles.next}
+                        nextLinkClassName={styles.pageLink}
+                        activeClassName={styles.active}
+                      />
+                    ) : null}
+                  </>
+                )}
               </div>
             )}
           </Col>
@@ -352,7 +360,7 @@ const Home = () => {
                 <div className={styles.tag_list}>
                   {tags.map((tag, index) => {
                     return (
-                      <a
+                      <a key={index}
                         className={
                           activeTag === tag ? styles.activeTag : styles.tag
                         }
