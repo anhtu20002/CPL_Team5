@@ -57,9 +57,13 @@ const Signup = ({ setAuthStatus }) => {
         // Nếu không thành công, xử lý lỗi từ server
         // const errorMessage = await response.text();
         // throw new Error(errorMessage);
-        console.error("Không có thông tin bài viết trả về từ máy chủ.");
-        toast("email " + response.errors.email[0]);
-        toast("username " + response.errors.username[0]);
+        if (response.errors.email && response.errors.email[0]) {
+          toast("Email " + response.errors.email[0]);
+        }
+        if (response.errors.username && response.errors.username[0]) {
+          toast("Username " + response.errors.username[0]);
+        }
+          console.error("Không có thông tin bài viết trả về từ máy chủ.");
         console.log(response.errors.email[0]);
         console.log(response.errors.username[0]);
       }
