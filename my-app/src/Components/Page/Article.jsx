@@ -77,7 +77,7 @@ export default function Article() {
               title: formData.title,
               description: formData.about,
               body: formData.content,
-              tagList: formData.tags.split(",").map((tag) => tag.trim()),
+              tagList: formData.tags,
             },
           }),
         });
@@ -103,13 +103,21 @@ export default function Article() {
       if (!response.ok) {
         throw new Error("Failed to submit article");
       }
-
+      const responseData = await response.json();
+      const newSlug = responseData.article.slug;
+      console.log(newSlug);
       toast.success(
         isEditing
           ? "Article updated successfully"
           : "Article created successfully"
       );
-      nav(`/article/${slug}`);
+      nav(`/article/${newSlug}`);
+      // toast.success(
+      //   isEditing
+      //     ? "Article updated successfully"
+      //     : "Article created successfully"
+      // );
+      // nav(`/article/${slug}`);
     } catch (error) {
       console.error("Error submitting article:", error);
       toast.error("Failed to submit article");

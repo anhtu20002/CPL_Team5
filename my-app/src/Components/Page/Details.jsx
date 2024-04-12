@@ -157,7 +157,8 @@ const Details = ({ myProfile }) => {
       // Kiểm tra xem yêu cầu xóa đã thành công hay không
       if (response.ok) {
         console.log("Article deleted successfully");
-        nav(`/profile/${encodeURIComponent(myProfile.user?.username)}`);
+        nav(-1)
+        // nav(`/profile/${encodeURIComponent(myProfile.user?.username)}`);
         // Thực hiện các hành động cần thiết sau khi xóa bài viết, ví dụ: cập nhật trạng thái của ứng dụng, điều hướng người dùng, vv.
       } else {
         console.error("Error deleting article:", response.status);
