@@ -54,7 +54,16 @@ const Home = () => {
 
   // truyền offset vào api
   const fetchArticles = (fillTag, offset, token) => {
-    if (fillTag.trim().length > 0) {
+    if (fillTag.trim().length > 0 && token) {
+      return fetch(
+        `https://api.realworld.io/api/articles?tag=${fillTag}&offset=${offset}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } else if (fillTag.trim().length > 0 && !token) {
       return fetch(
         `https://api.realworld.io/api/articles?tag=${fillTag}&offset=${offset}`
       );
@@ -251,7 +260,13 @@ const Home = () => {
             ) : (
               <div>
                 {articles.length === 0 ? (
-                  <div style={{margin: '0 auto', alignItems: 'center', display: 'flex'}}>
+                  <div
+                    style={{
+                      margin: "0 auto",
+                      alignItems: "center",
+                      display: "flex",
+                    }}
+                  >
                     <span>No articles are here... yet.</span>
                   </div>
                 ) : (
@@ -360,7 +375,8 @@ const Home = () => {
                 <div className={styles.tag_list}>
                   {tags.map((tag, index) => {
                     return (
-                      <a key={index}
+                      <a
+                        key={index}
                         className={
                           activeTag === tag ? styles.activeTag : styles.tag
                         }
