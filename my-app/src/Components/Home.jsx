@@ -26,6 +26,7 @@ const Home = () => {
   const [activeItem, setActiveItem] = useState("globalFeed");
   const [activeTag, setActiveTag] = useState("");
   const token = localStorage.getItem("token");
+  const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
     if (token) {
@@ -129,6 +130,7 @@ const Home = () => {
   const handlePageClick = (event) => {
     console.log("event thư viện page: ", event);
     setIsLoadingArticleWithPage(true);
+    setCurrentPage(event.selected);
     if (token) {
       if (!isFetchingFromFeed) {
         getArticles(fillTag, event.selected * 10, token);
@@ -151,6 +153,7 @@ const Home = () => {
     setActiveTag(tag);
     console.log(activeItem, toggleTag);
     setIsLoadingArticleWithPage(true);
+    setCurrentPage(0);
   };
 
   //toggle your feed
@@ -158,6 +161,7 @@ const Home = () => {
     setActiveItem("yourFeed");
     setIsFetchingFromFeed(true);
     setIsLoadingArticleWithPage(true);
+    setCurrentPage(0);
   };
 
   // toggle global feed
@@ -166,6 +170,7 @@ const Home = () => {
     setIsFetchingFromFeed(false);
     setFillTag("");
     setIsLoadingArticleWithPage(true);
+    setCurrentPage(0);
   };
 
   const handleToggleTag = (tag) => {
@@ -173,6 +178,7 @@ const Home = () => {
     setFillTag(tag);
     setIsFetchingFromFeed(false);
     setIsLoadingArticleWithPage(true);
+    setCurrentPage(0);
   };
 
   const handleFavorite = async (article) => {
@@ -351,29 +357,30 @@ const Home = () => {
                     })}
                   </>
                 )}
+                <div>
+                  {totalPages > 0 ? (
+                    <ReactPaginate
+                      key={activeItem}
+                      forcePage={currentPage}
+                      nextLabel=">"
+                      previousLabel="<"
+                      pageCount={totalPages}
+                      marginPagesDisplayed={0}
+                      pageRangeDisplayed={totalPages}
+                      onPageChange={handlePageClick}
+                      pageClassName={styles.pageItem}
+                      pageLinkClassName={styles.pageLink}
+                      containerClassName="pagination d-flex flex-wrap"
+                      previousClassName={styles.previous}
+                      previousLinkClassName={styles.pageLink}
+                      nextClassName={styles.next}
+                      nextLinkClassName={styles.pageLink}
+                      activeClassName={styles.active}
+                    />
+                  ) : null}
+                </div>
               </div>
             )}
-            <div>
-              {totalPages > 0 ? (
-                <ReactPaginate
-                  key={activeItem}
-                  nextLabel=">"
-                  previousLabel="<"
-                  pageCount={totalPages}
-                  marginPagesDisplayed={0}
-                  pageRangeDisplayed={totalPages}
-                  onPageChange={handlePageClick}
-                  pageClassName={styles.pageItem}
-                  pageLinkClassName={styles.pageLink}
-                  containerClassName="pagination d-flex flex-wrap"
-                  previousClassName={styles.previous}
-                  previousLinkClassName={styles.pageLink}
-                  nextClassName={styles.next}
-                  nextLinkClassName={styles.pageLink}
-                  activeClassName={styles.active}
-                />
-              ) : null}
-            </div>
           </Col>
           <Col md={3} className={styles.sidebar}>
             {isLoadingTags ? (

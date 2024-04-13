@@ -7,7 +7,7 @@ import ReactPaginate from "react-paginate";
 import styles from "./UserProfile.module.css";
 import Spinner from "react-bootstrap/Spinner";
 
-export default function UserFavorite({myProfile}) {
+export default function UserFavorite({ myProfile }) {
   const [articles, setArticles] = useState([]);
   const [user, setUser] = useState([]);
   const [follow, setFollow] = useState(false);
@@ -67,7 +67,7 @@ export default function UserFavorite({myProfile}) {
 
   // get user data
   useEffect(() => {
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("token");
     const fetchUserProfile = async () => {
       try {
         const response = token
@@ -122,11 +122,13 @@ export default function UserFavorite({myProfile}) {
         }
         const data = await response.json();
         setArticles(data.articles);
-        if (currentPage === 0 && data.articles.length === itemsPerPage ||
-          isReturningFromArticleDetail ) {
+        if (
+          (currentPage === 0 && data.articles.length === itemsPerPage) ||
+          isReturningFromArticleDetail
+        ) {
           setTotalPages(
             Math.ceil((data.articlesCount || articles.length) / itemsPerPage)
-          ); 
+          );
         }
         setIsLoadingArticles(false);
         setIsLoadingPagination(false);
@@ -188,9 +190,9 @@ export default function UserFavorite({myProfile}) {
     }
   };
 
-  const handleArticleClick = (article) =>{
+  const handleArticleClick = (article) => {
     nav(`/article/${article.slug}`, { isReturningFromArticleDetail: true });
-  }
+  };
 
   useEffect(() => {
     if (location.state && location.state.isReturningFromArticleDetail) {
@@ -203,9 +205,20 @@ export default function UserFavorite({myProfile}) {
   return (
     <div>
       {isLoadingArticles && isLoadingProfile ? (
-        <div style={{ margin: "auto", width: "1%", marginTop:'4rem', paddingRight:'4.0rem' }}>
-        <Spinner style={{width:'56px', height:'56px'}} animation="border" variant="success" />
-      </div>
+        <div
+          style={{
+            margin: "auto",
+            width: "1%",
+            marginTop: "4rem",
+            paddingRight: "4.0rem",
+          }}
+        >
+          <Spinner
+            style={{ width: "56px", height: "56px" }}
+            animation="border"
+            variant="success"
+          />
+        </div>
       ) : (
         <div className="">
           <div className="">
@@ -265,105 +278,121 @@ export default function UserFavorite({myProfile}) {
                 </li>
               </ul>
             </div>
+
             <div>
               {isLoadingPagination ? (
                 <div style={{ margin: "auto", width: "1%" }}>
                   <Spinner animation="border" variant="success" />
                 </div>
-              ) : articles.length > 0 && !isLoadingPagination ? (
-                articles.map((article) =>
-                  (article.favorited || !article.favorited) ? (
-                    <div
-                      key={article.slug}
-                      className={`${styles.article} py-2`}
-                    >
-                      <div
-                        className={`${styles.author_info} d-flex justify-content-between`}
-                      >
-                        <div className="d-flex">
-                          <a
-                            href={
-                              `/profile/` +
-                              encodeURIComponent(article.author.username)
-                            }
+              ) : (
+                <div>
+                  {articles.length > 0 && !isLoadingPagination ? (
+                    <div>
+                      {articles.map((article) =>
+                        article.favorited || !article.favorited ? (
+                          <div
+                            key={article.slug}
+                            className={`${styles.article} py-2`}
                           >
-                            <img src={article.author.image} alt="" />
-                          </a>
-                          <div>
-                            <div>
+                            <div
+                              className={`${styles.author_info} d-flex justify-content-between`}
+                            >
+                              <div className="d-flex">
+                                <a
+                                  href={
+                                    `/profile/` +
+                                    encodeURIComponent(article.author.username)
+                                  }
+                                >
+                                  <img src={article.author.image} alt="" />
+                                </a>
+                                <div>
+                                  <div>
+                                    <a
+                                      href={
+                                        `/profile/` +
+                                        encodeURIComponent(
+                                          article.author.username
+                                        )
+                                      }
+                                    >
+                                      {article.author.username}
+                                    </a>
+                                  </div>
+                                  <div>
+                                    <span>{formatDate(article.createdAt)}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <button
+                                  className={
+                                    article.favorited
+                                      ? `btn btn-sm pull-xs-right ${styles.activated}`
+                                      : "btn btn-sm btn-outline-success pull-xs-right"
+                                  }
+                                  onClick={() => handleFavorite(article.slug)}
+                                >
+                                  <FontAwesomeIcon icon={faHeart} />
+                                  <span>{article.favoritesCount}</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className={styles.article_preview}>
                               <a
-                                href={
-                                  `/profile/` +
-                                  encodeURIComponent(article.author.username)
-                                }
+                                href
+                                onClick={() => handleArticleClick(article)}
+                                style={{ textDecoration: "none" }}
                               >
-                                {article.author.username}
+                                <h3>{article.title}</h3>
+                                <p>{article.description}</p>
+                                <div>
+                                  <span>Read more...</span>
+                                  <ul className="tag-list">
+                                    {article.tagList.map((tag) => (
+                                      <li
+                                        className="tag-default tag-pill tag-outline"
+                                        key={tag}
+                                      >
+                                        {tag}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
                               </a>
                             </div>
-                            <div>
-                              <span>{formatDate(article.createdAt)}</span>
-                            </div>
                           </div>
-                        </div>
-                        <div>
-                          <button
-                            className={
-                              article.favorited
-                                ? `btn btn-sm pull-xs-right ${styles.activated}`
-                                : "btn btn-sm btn-outline-success pull-xs-right"
-                            }
-                            onClick={() => handleFavorite(article.slug)}
-                          >
-                            <FontAwesomeIcon icon={faHeart} />
-                            <span>{article.favoritesCount}</span>
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className={styles.article_preview}>
-                        <a href onClick={() =>handleArticleClick(article)} style={{ textDecoration: "none" }}>
-                          <h3>{article.title}</h3>
-                          <p>{article.description}</p>
-                          <div>
-                            <span>Read more...</span>
-                            <ul className="tag-list">
-                              {article.tagList.map((tag) => (
-                                <li
-                                  className="tag-default tag-pill tag-outline"
-                                  key={tag}
-                                >
-                                  {tag}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </a>
+                        ) : null
+                      )}
+                      <div>
+                        {totalPages > 0 && (
+                          <ReactPaginate
+                            forcePage={currentPage}
+                            nextLabel=">"
+                            previousLabel="<"
+                            pageCount={totalPages}
+                            marginPagesDisplayed={0}
+                            pageRangeDisplayed={totalPages}
+                            onPageChange={handlePageClick}
+                            pageClassName={styles.pageItem}
+                            pageLinkClassName={styles.pageLink}
+                            containerClassName="pagination d-flex flex-wrap"
+                            previousClassName={styles.previous}
+                            previousLinkClassName={styles.pageLink}
+                            nextClassName={styles.next}
+                            nextLinkClassName={styles.pageLink}
+                            activeClassName={styles.active}
+                          />
+                        )}
                       </div>
                     </div>
-                  ) : null
-                )
-              ) : (
-                <p className="mt-3 text-center">No articles are here... yet.</p>
-              )}
-            </div>
-            <div>
-              {totalPages > 0 && (
-                <ReactPaginate
-                  nextLabel=">"
-                  previousLabel="<"
-                  pageCount={totalPages}
-                  marginPagesDisplayed={0}
-                  pageRangeDisplayed={totalPages}
-                  onPageChange={handlePageClick}
-                  pageClassName={styles.pageItem}
-                  pageLinkClassName={styles.pageLink}
-                  containerClassName="pagination d-flex flex-wrap"
-                  previousClassName={styles.previous}
-                  previousLinkClassName={styles.pageLink}
-                  nextClassName={styles.next}
-                  nextLinkClassName={styles.pageLink}
-                  activeClassName={styles.active}
-                />
+                  ) : (
+                    <p className="mt-3 text-center">
+                      No articles are here... yet.
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           </div>
