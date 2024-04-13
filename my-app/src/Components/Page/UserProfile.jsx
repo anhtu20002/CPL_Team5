@@ -19,7 +19,6 @@ export default function UserProfile({ myProfile }) {
   const [currentPage, setCurrentPage] = useState(0); // Page number (0-based)
   const [itemsPerPage, setItemsPerPage] = useState(5); // Articles per page
   const [totalPages, setTotalPages] = useState(0);
-  const token = localStorage.getItem("token");
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -65,6 +64,7 @@ export default function UserProfile({ myProfile }) {
 
   // get user data
   useEffect(() => {
+    const token = localStorage.getItem("token")
     const fetchUserProfile = async () => {
       try {
         const response = token
@@ -101,6 +101,7 @@ export default function UserProfile({ myProfile }) {
 
   // get articles data
   useEffect(() => {
+    const token = localStorage.getItem("token")
     const fetchArticles = async () => {
       const offset = currentPage * itemsPerPage;
       try {

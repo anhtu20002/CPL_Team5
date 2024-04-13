@@ -223,3 +223,13 @@
         color: black;
     }
 }
+
+.notLoggedIn a{
+    color: #5cb85c;
+    text-decoration: none;
+}
+
+.notLoggedIn a:hover{
+    color:#3d8d49;
+    text-decoration: underline;
+}

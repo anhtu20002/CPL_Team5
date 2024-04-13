@@ -22,7 +22,6 @@ export default function UserFavorite({myProfile}) {
   const [totalPages, setTotalPages] = useState(0);
   const [isReturningFromArticleDetail, setIsReturningFromArticleDetail] =
     useState(false);
-  const token = localStorage.getItem("token");
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -68,6 +67,7 @@ export default function UserFavorite({myProfile}) {
 
   // get user data
   useEffect(() => {
+    const token = localStorage.getItem("token")
     const fetchUserProfile = async () => {
       try {
         const response = token

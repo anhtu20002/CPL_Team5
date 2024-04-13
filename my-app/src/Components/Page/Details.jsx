@@ -12,13 +12,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "../Page/Details.module.css";
 import { useParams, useNavigate } from "react-router-dom";
+import Spinner from "react-bootstrap/Spinner";
 
 const Details = ({ myProfile }) => {
   const { slug } = useParams();
   const [article, setArticles] = useState(null);
   const [follow, setFollow] = useState(false);
   const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
+  const [isLoadingArticle, setIsLoadingArticle] = useState(true);
+  const [isLoadingComments, setIsLoadingComments] = useState(true);
   // console.log(myProfile.user.username);
 
   const nav = useNavigate();
@@ -37,6 +39,7 @@ const Details = ({ myProfile }) => {
       const data = await response.json();
       // console.log(data);
       setArticles(data.article);
+      setIsLoadingArticle(false);
     };
 
     fetchData();
@@ -116,26 +119,30 @@ const Details = ({ myProfile }) => {
   // get comment
   useEffect(() => {
     getComments();
+    setIsLoadingComments(false);
   }, []);
 
   const fetchComments = () => {
-    console.log(slug);
-    return fetch(`https://api.realworld.io/api/articles/${slug}/comments`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const token = localStorage.getItem("token");
+    return token
+      ? fetch(`https://api.realworld.io/api/articles/${slug}/comments`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+      : fetch(`https://api.realworld.io/api/articles/${slug}/comments`);
   };
   const getComments = async () => {
     let res = await fetchComments();
     let data = await res.json();
-    console.log(data);
-    setComments(data.comments);
+    const comments = data.comments.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    ); // Sort by creation date descending
+    setComments(comments);
   };
 
   // delete comment
   const fetchDeleteComment = (id) => {
-    console.log(slug);
     return fetch(
       `https://api.realworld.io/api/articles/${slug}/comments/${id}`,
       {
@@ -147,13 +154,16 @@ const Details = ({ myProfile }) => {
     );
   };
   const handleDeleteComment = (id) => {
-    console.log(id);
     fetchDeleteComment(id).then((res) => {
       if (!res.ok) {
         toast.error("Error! Could not delete this Comment.");
       } else {
         getComments();
         toast.success("Successfully deleted the Comment!");
+        setIsLoadingComments(true);
+        setTimeout(() => {
+          setIsLoadingComments(false);
+        }, 1000);
       }
     });
   };
@@ -227,225 +237,255 @@ const Details = ({ myProfile }) => {
 
   return (
     <div className={styles.article_page}>
-      {article ? (
+      {article && !isLoadingArticle ? (
         <div>
-          <div className={styles.banner}>
-            <Container
-              className="col-9"
-              style={{ padding: "2rem 0", margin: "auto" }}
-            >
-              <strong style={{ color: "#ffffff", fontSize: "44.8px" }}>
-                {article.title}
-              </strong>
-              <div className={styles.article_meta}>
-                <a
-                  href={
-                    `/profile/` + encodeURIComponent(article.author.username)
-                  }
-                >
-                  <img
-                    src={article.author.image}
-                    alt=""
-                    className={styles.author_avatar}
-                  />
-                </a>
-                <div>
+          <div>
+            <div className={styles.banner}>
+              <Container
+                className="col-9"
+                style={{ padding: "2rem 0", margin: "auto" }}
+              >
+                <strong style={{ color: "#ffffff", fontSize: "44.8px" }}>
+                  {article.title}
+                </strong>
+                <div className={styles.article_meta}>
                   <a
                     href={
                       `/profile/` + encodeURIComponent(article.author.username)
                     }
-                    className={styles.info}
                   >
-                    {article.author.username}
+                    <img
+                      src={article.author.image}
+                      alt=""
+                      className={styles.author_avatar}
+                    />
                   </a>
-                  <span>{formatDate(article.createdAt)}</span>
+                  <div>
+                    <a
+                      href={
+                        `/profile/` +
+                        encodeURIComponent(article.author.username)
+                      }
+                      className={styles.info}
+                    >
+                      {article.author.username}
+                    </a>
+                    <span>{formatDate(article.createdAt)}</span>
+                  </div>
+                  <div className={styles.group_button}>
+                    {article.author.username === myProfile.user?.username ? (
+                      <div>
+                        <button
+                          className={`btn btn-sm  action-btn ${styles.button_editArticle}`}
+                          onClick={(e) => handleEdit(e)}
+                        >
+                          <span>
+                            <FontAwesomeIcon icon={faPen} />
+                            &nbsp;Edit Article
+                          </span>
+                        </button>
+                        <button
+                          className={`btn btn-outline-danger btn-sm ${styles.button_delArticle}`}
+                          onClick={(e) => handleDelete(e)}
+                        >
+                          <span>
+                            <FontAwesomeIcon icon={faTrashCan} />
+                            &nbsp;Delete Article{" "}
+                          </span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <button
+                          onClick={() => handleFollow(article.author.username)}
+                          className={
+                            article.author.following
+                              ? `btn btn-sm action-btn btn-secondary ${styles.button_unfollow}`
+                              : `btn btn-sm action-btn btn-secondary ${styles.button_follow}`
+                          }
+                        >
+                          {article.author.following ? (
+                            <span>
+                              <FontAwesomeIcon icon={faPlus} />
+                              &nbsp;Unfollow {article.author.username}
+                            </span>
+                          ) : (
+                            <span>
+                              <FontAwesomeIcon icon={faPlus} /> &nbsp;Follow{" "}
+                              {article.author.username}
+                            </span>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleFavorite(article)}
+                          className={
+                            article.favorited
+                              ? `btn btn-outline-success btn-sm ${styles.button_unfavorite}`
+                              : `btn btn-outline-success btn-sm ${styles.button_favorite}`
+                          }
+                        >
+                          {article.favorited ? (
+                            <span>
+                              <FontAwesomeIcon icon={faHeart} />
+                              &nbsp;Unfavorite Article ({article.favoritesCount}
+                              )
+                            </span>
+                          ) : (
+                            <span>
+                              <FontAwesomeIcon icon={faHeart} />
+                              &nbsp;Favorite Article ({article.favoritesCount})
+                            </span>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className={styles.group_button}>
-                  {article.author.username === myProfile.user?.username ? (
-                    <div>
-                      <button
-                        className={`btn btn-sm  action-btn ${styles.button_editArticle}`}
-                        onClick={(e) => handleEdit(e)}
+              </Container>
+            </div>
+
+            <Container
+              className="col-9"
+              style={{
+                color: "#373a3c",
+                borderBottom: "1px solid #c5c5c5",
+                margin: "auto",
+                padding: "0",
+              }}
+            >
+              <p style={{ fontSize: "18px" }}>{article.description}</p>
+              <p style={{ fontSize: "18px" }}>{article.body}</p>
+              <div className={styles.tag_list}>
+                <ul>
+                  {article.tagList.map((tag) => {
+                    return (
+                      <li
+                        className="tag-default tag-pill tag-outline"
+                        key={tag}
                       >
-                        <span>
-                          <FontAwesomeIcon icon={faPen} />
-                          &nbsp;Edit Article
-                        </span>
-                      </button>
-                      <button
-                        className={`btn btn-outline-danger btn-sm ${styles.button_delArticle}`}
-                        onClick={(e) => handleDelete(e)}
-                      >
-                        <span>
-                          <FontAwesomeIcon icon={faTrashCan} />
-                          &nbsp;Delete Article{" "}
-                        </span>
-                      </button>
-                    </div>
-                  ) : (
-                    <div>
-                      <button
-                        onClick={() => handleFollow(article.author.username)}
-                        className={
-                          article.author.following
-                            ? `btn btn-sm action-btn btn-secondary ${styles.button_unfollow}`
-                            : `btn btn-sm action-btn btn-secondary ${styles.button_follow}`
-                        }
-                      >
-                        {article.author.following ? (
-                          <span>
-                            <FontAwesomeIcon icon={faPlus} />
-                            &nbsp;Unfollow {article.author.username}
-                          </span>
-                        ) : (
-                          <span>
-                            <FontAwesomeIcon icon={faPlus} /> &nbsp;Follow{" "}
-                            {article.author.username}
-                          </span>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => handleFavorite(article)}
-                        className={
-                          article.favorited
-                            ? `btn btn-outline-success btn-sm ${styles.button_unfavorite}`
-                            : `btn btn-outline-success btn-sm ${styles.button_favorite}`
-                        }
-                      >
-                        {article.favorited ? (
-                          <span>
-                            <FontAwesomeIcon icon={faHeart} />
-                            &nbsp;Unfavorite Article ({article.favoritesCount})
-                          </span>
-                        ) : (
-                          <span>
-                            <FontAwesomeIcon icon={faHeart} />
-                            &nbsp;Favorite Article ({article.favoritesCount})
-                          </span>
-                        )}
-                      </button>
-                    </div>
-                  )}
-                </div>
+                        {tag}
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
             </Container>
           </div>
 
-          <Container
-            className="col-9"
-            style={{
-              color: "#373a3c",
-              borderBottom: "1px solid #c5c5c5",
-              margin: "auto",
-              padding: "0",
-            }}
-          >
-            <p style={{ fontSize: "18px" }}>{article.description}</p>
-            <p style={{ fontSize: "18px" }}>{article.body}</p>
-            <div className={styles.tag_list}>
-              <ul>
-                {article.tagList.map((tag) => {
-                  return (
-                    <li className="tag-default tag-pill tag-outline" key={tag}>
-                      {tag}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </Container>
-        </div>
-      ) : (
-        <p>Loading article...</p>
-      )}
-
-      <div className={styles.comment}>
-        {token ? (
-          <div>
-            <form className="card comment-form" onSubmit={handleSubmit}>
-              <div className="card-block">
-                <textarea
-                  name="comment"
-                  placeholder="Write a comment..."
-                  className="form-control"
-                  rows={3}
-                ></textarea>
-              </div>
-              <div
-                style={{ backgroundColor: "#f5f5f5", color: "#373a3c" }}
-                className="d-flex align-items-center justify-content-between p-3"
-              >
-                <img
-                  src={`${myProfile.user?.image}`}
-                  alt="avatar"
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "100%",
-                  }}
-                ></img>
-                <button
-                  type="submit"
-                  className={`btn btn-outline-success btn-sm ${styles.button_comment}`}
-                >
-                  Post Comment
-                </button>
-              </div>
-            </form>
-            {comments.map((item, index) => {
-              return (
-                <div className="card" style={{ marginTop: ".75rem" }}>
-                  <div className="card-block" style={{ padding: "1.25rem" }}>
-                    <p
-                      className="card-text"
-                      style={{ width: "560px", height: "auto" }}
-                    >
-                      {item.body}
-                    </p>
+          <div className={styles.comment}>
+            {token && !isLoadingComments ? (
+              <div>
+                <form className="card comment-form" onSubmit={handleSubmit}>
+                  <div className="card-block">
+                    <textarea
+                      name="comment"
+                      placeholder="Write a comment..."
+                      className="form-control"
+                      rows={3}
+                    ></textarea>
                   </div>
                   <div
                     style={{ backgroundColor: "#f5f5f5", color: "#373a3c" }}
-                    className="card-footer d-flex align-items-center justify-content-between p-3"
+                    className="d-flex align-items-center justify-content-between p-3"
                   >
-                    <div className={styles.author}>
-                      <a>
-                        <img
-                          src={item.author.image}
-                          style={{
-                            width: "32px",
-                            height: "32px",
-                            borderRadius: "100%",
-                          }}
-                        />
-                      </a>
-                      &nbsp;
-                      <a
-                        className={styles.author_name}
-                        href={`/profile/${item.author.username}`}
-                      >
-                        {item.author.username}
-                      </a>
-                      &nbsp;
-                      <span style={{ color: "#bebcbc" }}>{item.createdAt}</span>
-                    </div>
-                    <span
-                      className={styles.button_delComment}
-                      onClick={() => handleDeleteComment(item.id)}
+                    <img
+                      src={`${myProfile.user?.image}`}
+                      alt="avatar"
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "100%",
+                      }}
+                    ></img>
+                    <button
+                      type="submit"
+                      className={`btn btn-outline-success btn-sm ${styles.button_comment}`}
                     >
-                      <FontAwesomeIcon icon={faTrashAlt} />
-                    </span>
+                      Post Comment
+                    </button>
                   </div>
-                </div>
-              );
-            })}
+                </form>
+                {comments.map((item, index) => {
+                  return (
+                    <div className="card" style={{ marginTop: ".75rem" }}>
+                      <div
+                        className="card-block"
+                        style={{ padding: "1.25rem" }}
+                      >
+                        <p
+                          className="card-text"
+                          style={{ width: "560px", height: "auto" }}
+                        >
+                          {item.body}
+                        </p>
+                      </div>
+                      <div
+                        style={{ backgroundColor: "#f5f5f5", color: "#373a3c" }}
+                        className="card-footer d-flex align-items-center justify-content-between p-3"
+                      >
+                        <div className={styles.author}>
+                          <a href>
+                            <img
+                              alt=""
+                              src={item.author.image}
+                              style={{
+                                width: "32px",
+                                height: "32px",
+                                borderRadius: "100%",
+                              }}
+                            />
+                          </a>
+                          &nbsp;
+                          <a
+                            className={styles.author_name}
+                            href={`/profile/${item.author.username}`}
+                          >
+                            {item.author.username}
+                          </a>
+                          &nbsp;
+                          <span style={{ color: "#bebcbc" }}>
+                            {item.createdAt}
+                          </span>
+                        </div>
+                        <span
+                          className={styles.button_delComment}
+                          onClick={() => handleDeleteComment(item.id)}
+                        >
+                          <FontAwesomeIcon icon={faTrashAlt} />
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : token && isLoadingComments ? (
+              <div style={{ margin: "auto", width: "1%" }}>
+                <Spinner animation="border" variant="success" />
+              </div>
+            ) : (
+              <p className={styles.notLoggedIn}>
+                <a href="/login">Sign in</a> or <a href="/register">Sign up</a>{" "}
+                to add comments on this article
+              </p>
+            )}
           </div>
-        ) : (
-          <p>
-            <a href="/login">Sign in</a> or <a href="/register">Sign up</a> to
-            add comments on this articles
-          </p>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div
+          style={{
+            margin: "auto",
+            width: "1%",
+            marginTop: "4rem",
+            paddingRight: "4.0rem",
+          }}
+        >
+          <Spinner
+            style={{ width: "56px", height: "56px" }}
+            animation="border"
+            variant="success"
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -12,7 +12,6 @@ import UserProfile from "./Components/Page/UserProfile";
 import UserFavorite from "./Components/Page/UserFavorite";
 import Details from "./Components/Page/Details";
 import Footer from "./Components/Footer";
-import NotFound from "./Components/NotFound";
 // import  {ToastContainer } from  
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,7 +19,7 @@ const App = () => {
   const [myProfile, setMyProfile]= useState([]);
 
   const [authStatus, setAuthStatus] = useState("UNAUTHENTICATED");
-
+  const [showHeaderFooter, setShowHeaderFooter] = useState(true);
   useEffect(() => {
     const token = localStorage.getItem("token");
     setAuthStatus(token ? "AUTHENTICATED" : "UNAUTHENTICATED");
@@ -44,14 +43,21 @@ const App = () => {
     fetchData();
   }, [myProfile]);
 
-  const isNotFound = () => {
-    const dynamicPathsRegex = /^\/$|\/article\/[a-zA-Z0-9-_]+|\/profile\/[a-zA-Z0-9-_]+\/favorites|\/profile\/[a-zA-Z0-9-_]+|\/login|\/editor|\/register|\/settings/;
-    return !dynamicPathsRegex.test(window.location.pathname);
+  const NotFound = ({ hideHeaderFooter}) => {
+    // Ẩn Footer và Header khi NotFound hiển thị
+    hideHeaderFooter();
+
+    return (
+      <div>
+        <h1>404 Not Found</h1>
+        <p>This page does not exist.</p>
+      </div>
+    );
   };
 
   return (
     <div className="App">
-      {isNotFound() ? null : (authStatus === "AUTHENTICATED" ? <HomePage myProfile={myProfile}/> : <Header />)}
+      {!showHeaderFooter ? null : (authStatus === "AUTHENTICATED" ? <HomePage myProfile={myProfile}/> : <Header />)}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/article/:slug" element={<Details myProfile={myProfile}/>}/>
@@ -68,9 +74,9 @@ const App = () => {
         />
         <Route path="/profile/:username" element={<UserProfile myProfile={myProfile}/>} />
         <Route path="/profile/:username/favorites" element={<UserFavorite myProfile={myProfile} />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFound hideHeaderFooter ={()=> setShowHeaderFooter(false)}/>} />
       </Routes>
-      {isNotFound() ? null : <Footer />}
+      {!showHeaderFooter ? null : <Footer />}
       <ToastContainer/>
     </div>
   );
