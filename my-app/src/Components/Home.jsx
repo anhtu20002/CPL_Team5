@@ -50,6 +50,7 @@ const Home = () => {
     setArticles(data.articles);
     setTotalPages(Math.ceil(data.articlesCount / 10));
     setIsLoadingArticles(false); // Kết thúc quá trình tải dữ liệu
+    setIsLoadingArticleWithPage(false);
   };
 
   // truyền offset vào api
@@ -86,6 +87,7 @@ const Home = () => {
     setArticles(data.articles);
     setTotalPages(Math.ceil(data.articlesCount / 10));
     setIsLoadingArticles(false); // Kết thúc quá trình tải dữ liệu
+    setIsLoadingArticleWithPage(false);
   };
 
   const fetchArticlesFromFeed = (offset, token) => {
@@ -112,6 +114,7 @@ const Home = () => {
       .catch((err) => {
         console.log(err.message);
         setIsLoadingTags(false); // Kết thúc quá trình tải dữ liệu
+        setIsLoadingArticleWithPage(false);
       });
   }, []);
 
@@ -125,6 +128,7 @@ const Home = () => {
   // lấy số trang, set offset
   const handlePageClick = (event) => {
     console.log("event thư viện page: ", event);
+    setIsLoadingArticleWithPage(true);
     if (token) {
       if (!isFetchingFromFeed) {
         getArticles(fillTag, event.selected * 10, token);
@@ -146,12 +150,14 @@ const Home = () => {
     setActiveItem(tag);
     setActiveTag(tag);
     console.log(activeItem, toggleTag);
+    setIsLoadingArticleWithPage(true);
   };
 
   //toggle your feed
   const handleFetchFromFeed = () => {
     setActiveItem("yourFeed");
     setIsFetchingFromFeed(true);
+    setIsLoadingArticleWithPage(true);
   };
 
   // toggle global feed
@@ -159,12 +165,14 @@ const Home = () => {
     setActiveItem("globalFeed");
     setIsFetchingFromFeed(false);
     setFillTag("");
+    setIsLoadingArticleWithPage(true);
   };
 
   const handleToggleTag = (tag) => {
     setActiveItem(tag);
     setFillTag(tag);
     setIsFetchingFromFeed(false);
+    setIsLoadingArticleWithPage(true);
   };
 
   const handleFavorite = async (article) => {
@@ -246,7 +254,7 @@ const Home = () => {
                 )}
               </ul>
             </div>
-            {isLoadingArticles ? (
+            {isLoadingArticles && isLoadingArticleWithPage ? (
               <div className="text-center">
                 <ReactLoading
                   className={styles.loadingContainer}
@@ -341,28 +349,31 @@ const Home = () => {
                         </div>
                       );
                     })}
-                    {totalPages > 0 ? (
-                      <ReactPaginate
-                        nextLabel=">"
-                        previousLabel="<"
-                        pageCount={totalPages}
-                        marginPagesDisplayed={0}
-                        pageRangeDisplayed={totalPages}
-                        onPageChange={handlePageClick}
-                        pageClassName={styles.pageItem}
-                        pageLinkClassName={styles.pageLink}
-                        containerClassName="pagination d-flex flex-wrap"
-                        previousClassName={styles.previous}
-                        previousLinkClassName={styles.pageLink}
-                        nextClassName={styles.next}
-                        nextLinkClassName={styles.pageLink}
-                        activeClassName={styles.active}
-                      />
-                    ) : null}
                   </>
                 )}
               </div>
             )}
+            <div>
+              {totalPages > 0 ? (
+                <ReactPaginate
+                  key={activeItem}
+                  nextLabel=">"
+                  previousLabel="<"
+                  pageCount={totalPages}
+                  marginPagesDisplayed={0}
+                  pageRangeDisplayed={totalPages}
+                  onPageChange={handlePageClick}
+                  pageClassName={styles.pageItem}
+                  pageLinkClassName={styles.pageLink}
+                  containerClassName="pagination d-flex flex-wrap"
+                  previousClassName={styles.previous}
+                  previousLinkClassName={styles.pageLink}
+                  nextClassName={styles.next}
+                  nextLinkClassName={styles.pageLink}
+                  activeClassName={styles.active}
+                />
+              ) : null}
+            </div>
           </Col>
           <Col md={3} className={styles.sidebar}>
             {isLoadingTags ? (
