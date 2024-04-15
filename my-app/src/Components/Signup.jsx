@@ -28,8 +28,8 @@ const Signup = ({ setAuthStatus }) => {
       },
       body: JSON.stringify(data),
     });
-    console.log(JSON.stringify(data));
-    console.log(data);
+    // console.log(JSON.stringify(data));
+    // console.log(data);
     return response.json();
   };
 
@@ -49,7 +49,7 @@ const Signup = ({ setAuthStatus }) => {
       if (response.user) {
         // Nếu thành công, chuyển hướng đến trang chính
         // navigate("/");
-        console.log(response.user);
+        // console.log(response.user);
         localStorage.setItem("token", response.user.token);
         setAuthStatus("AUTHENTICATED"); // Update authStatus
         navigate("/");
@@ -64,8 +64,8 @@ const Signup = ({ setAuthStatus }) => {
           toast.error("Username " + response.errors.username[0]);
         }
           console.error("Không có thông tin bài viết trả về từ máy chủ.");
-        console.log(response.errors.email[0]);
-        console.log(response.errors.username[0]);
+        // console.log(response.errors.email[0]);
+        // console.log(response.errors.username[0]);
       }
     } catch (error) {
       // Xử lý lỗi từ phía client hoặc server

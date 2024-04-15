@@ -47,21 +47,23 @@ const Login = ({ setAuthStatus }) => {
           password,
         },
       });
-      console.log(user);
+      // console.log(user);
       if (user === undefined) {
-        console.error("Đăng nhập thất bại");
-        toast.error("Email or password is invalid");
-        console.log(user.errors);
+        // console.error("Đăng nhập thất bại");
+        toast("Email or password is invalid");
+        // console.log(user.errors);
       } else {
-        console.log("Đăng nhập thành công!", user);
-        console.log(user.token);
+        // console.log("Đăng nhập thành công!", user);
+        // console.log(user.token);
         localStorage.setItem("token", user.token);
+        localStorage.setItem("username", user.username);
+        localStorage.setItem("image", user.image);
         setAuthStatus("AUTHENTICATED"); // Update authStatus
         navigate("/");
         // history.push("/")
       }
       // Xử lý khi đăng nhập thành công
-      console.log(user.token);
+      // console.log(user.token);
     } catch (error) {
       // Xử lý khi đăng nhập thất bại
       console.log(error);
@@ -77,7 +79,7 @@ const Login = ({ setAuthStatus }) => {
         }}
       >
         <div className="container-left">
-          <h2>Sign in</h2>
+          <h2>Sign In</h2>
           <p
             style={{
               color: "#5CB85C",
@@ -93,11 +95,11 @@ const Login = ({ setAuthStatus }) => {
                 textAlign: "center",
               }}
             >
-              Need An Account?
+              Need An Account
             </Link>
           </p>
         </div>
-        <div className="container-form" style={{ textAlign: "center" }}>
+        <div className="container-form" style={{textAlign:"center"}}>
           <form className="form" onSubmit={handleSubmit}>
             <div className="form-group">
               {/* <label htmlFor="exampleInputEmail1">Email address</label> */}
@@ -126,16 +128,10 @@ const Login = ({ setAuthStatus }) => {
             </div>
             <button
               type="submit"
-              style={{
-                float: "right",
-                borderRadius: "5px",
-                fontSize: "1.2rem",
-                marginTop: "5px",
-              }}
-
+              
               // style={{ color: "#5CB85C" }}
             >
-              Sign in
+              Submit
             </button>
           </form>
         </div>

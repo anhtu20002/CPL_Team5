@@ -47,7 +47,7 @@ const Home = () => {
     let res = await fetchArticles(fillTag, offset, token);
     let data = await res.json();
 
-    console.log(data.articles);
+    // console.log(data.articles);
     setArticles(data.articles);
     setTotalPages(Math.ceil(data.articlesCount / 10));
     setIsLoadingArticles(false); // Kết thúc quá trình tải dữ liệu
@@ -84,7 +84,7 @@ const Home = () => {
     let res = await fetchArticlesFromFeed(offset, token);
     let data = await res.json();
 
-    console.log(data.articles);
+    // console.log(data.articles);
     setArticles(data.articles);
     setTotalPages(Math.ceil(data.articlesCount / 10));
     setIsLoadingArticles(false); // Kết thúc quá trình tải dữ liệu
@@ -108,7 +108,7 @@ const Home = () => {
     fetch("https://api.realworld.io/api/tags")
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.tags);
+        // console.log(data.tags);
         setTags(data.tags);
         setIsLoadingTags(false); // Kết thúc quá trình tải dữ liệu
       })
@@ -128,7 +128,7 @@ const Home = () => {
 
   // lấy số trang, set offset
   const handlePageClick = (event) => {
-    console.log("event thư viện page: ", event);
+    // console.log("event thư viện page: ", event);
     setIsLoadingArticleWithPage(true);
     setCurrentPage(event.selected);
     if (token) {
@@ -145,13 +145,13 @@ const Home = () => {
   // fill tags
   const handleClickTags = (event, tag) => {
     event.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>
-    console.log("Clicked tag:", tag);
+    // console.log("Clicked tag:", tag);
     setFillTag(tag);
     setToggleTag(tag);
     setIsFetchingFromFeed(false);
     setActiveItem(tag);
     setActiveTag(tag);
-    console.log(activeItem, toggleTag);
+    // console.log(activeItem, toggleTag);
     setIsLoadingArticleWithPage(true);
     setCurrentPage(0);
   };

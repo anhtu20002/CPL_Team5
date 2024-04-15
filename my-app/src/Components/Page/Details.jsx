@@ -37,7 +37,7 @@ const Details = ({ myProfile }) => {
           })
         : await fetch(`https://api.realworld.io/api/articles/${slug}`);
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       setArticles(data.article);
       setIsLoadingArticle(false);
     };

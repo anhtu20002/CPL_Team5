@@ -41,7 +41,7 @@ export default function Article() {
           tags: data.article.tagList.join(", "),
         });
       } catch (error) {
-        nav("/");
+        // nav("/");
 
         console.error("Error fetching article:", error);
       }
@@ -117,7 +117,7 @@ export default function Article() {
       }
       const responseData = await response.json();
       const newSlug = responseData.article.slug;
-      console.log(newSlug);
+      // console.log(newSlug);
       toast.success(
         isEditing
           ? "Article updated successfully"
