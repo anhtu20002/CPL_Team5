@@ -81,9 +81,9 @@ export default function UserFavorite({ myProfile }) {
                 },
               }
             )
-          : `https://api.realworld.io/api/profiles/${encodeURIComponent(
+          : await fetch (`https://api.realworld.io/api/profiles/${encodeURIComponent(
               username
-            )}`;
+            )}`);
         if (!response.ok) {
           throw new Error("Failed to fetch user profile");
         }
