@@ -37,7 +37,7 @@ const Details = ({ myProfile }) => {
           })
         : await fetch(`https://api.realworld.io/api/articles/${slug}`);
       const data = await response.json();
-      // console.log(data);
+      console.log(data);
       setArticles(data.article);
       setIsLoadingArticle(false);
     };
@@ -201,7 +201,6 @@ const Details = ({ myProfile }) => {
   //delete article
   const handleDelete = async () => {
     try {
-      // Gửi yêu cầu DELETE đến API
       const response = await fetch(
         `https://api.realworld.io/api/articles/${slug}`,
         {
@@ -212,20 +211,15 @@ const Details = ({ myProfile }) => {
           },
         }
       );
-
-      // Kiểm tra xem yêu cầu xóa đã thành công hay không
       if (response.ok) {
         console.log("Article deleted successfully");
-        nav(-1);
-        // nav(`/profile/${encodeURIComponent(myProfile.user?.username)}`);
-        // Thực hiện các hành động cần thiết sau khi xóa bài viết, ví dụ: cập nhật trạng thái của ứng dụng, điều hướng người dùng, vv.
+        // nav(-1);
+        nav(`/profile/${encodeURIComponent(myProfile.user?.username)}`);
       } else {
         console.error("Error deleting article:", response.status);
-        // Xử lý lỗi nếu có
       }
     } catch (error) {
       console.error("Error deleting article:", error);
-      // Xử lý lỗi nếu có
     }
   };
 

@@ -41,6 +41,8 @@ export default function Article() {
           tags: data.article.tagList.join(", "),
         });
       } catch (error) {
+        nav("/");
+
         console.error("Error fetching article:", error);
       }
     };
@@ -54,10 +56,20 @@ export default function Article() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    if (name === "tags") {
+      // Chuyển đổi giá trị của trường nhập liệu tags thành một mảng
+      const tagsArray = value.split(",").map((tag) => tag.trim());
+      setFormData({
+        ...formData,
+        [name]: tagsArray,
+      });
+    } else {
+      // Giữ nguyên cách xử lý cho các trường nhập liệu khác
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -94,7 +106,7 @@ export default function Article() {
               title: formData.title,
               description: formData.about,
               body: formData.content,
-              tagList: formData.tags.split(",").map((tag) => tag.trim()),
+              tagList: formData.tags,
             },
           }),
         });
