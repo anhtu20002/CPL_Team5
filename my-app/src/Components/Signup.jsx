@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 const Signup = ({ setAuthStatus }) => {
   const SERVER_API = "https://api.realworld.io/api";
   const [formData, setFormData] = useState({
-    username: "viet1",
-    email: "viet1@gmail.com",
-    password: "123456",
+    username: "",
+    email: "",
+    password: "",
   });
   const navigate = useNavigate();
   const handleChange = (event) => {
@@ -63,7 +63,7 @@ const Signup = ({ setAuthStatus }) => {
         if (response.errors.username && response.errors.username[0]) {
           toast.error("Username " + response.errors.username[0]);
         }
-          console.error("Không có thông tin bài viết trả về từ máy chủ.");
+        console.error("Không có thông tin bài viết trả về từ máy chủ.");
         // console.log(response.errors.email[0]);
         // console.log(response.errors.username[0]);
       }
