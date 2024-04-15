@@ -50,7 +50,7 @@ const Login = ({ setAuthStatus }) => {
       // console.log(user);
       if (user === undefined) {
         // console.error("Đăng nhập thất bại");
-        toast("Email or password is invalid");
+        toast.error("Email or password is invalid");
         // console.log(user.errors);
       } else {
         // console.log("Đăng nhập thành công!", user);
